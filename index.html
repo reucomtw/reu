@@ -1,0 +1,1666 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>新光人壽｜找到你的人生樣態</title>
+<style>
+  /* =============================================
+     🎨 品牌色彩設定（可修改）
+     ============================================= */
+  :root {
+    --red:        #C0392B;
+    --red-dark:   #922B21;
+    --red-light:  #F1948A;
+    --gold:       #D4A017;
+    --gold-light: #F7DC6F;
+    --cream:      #FFF8F0;
+    --warm-gray:  #F5EDE0;
+    --text-dark:  #2C1810;
+    --text-mid:   #6B4C3B;
+    --text-light: #A0826D;
+    --white:      #FFFFFF;
+    --shadow:     rgba(192,57,43,0.15);
+  }
+
+  /* =============================================
+     基礎重置
+     ============================================= */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Serif TC', 'Georgia', serif;
+    background: var(--cream);
+    color: var(--text-dark);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* =============================================
+     容器與佈局
+     ============================================= */
+  .app {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 0 16px 60px;
+    position: relative;
+  }
+
+  /* =============================================
+     頂部品牌欄
+     ============================================= */
+  .brand-bar {
+    background: var(--red);
+    color: var(--white);
+    text-align: center;
+    padding: 14px 20px;
+    letter-spacing: 0.15em;
+    font-size: 13px;
+    font-weight: 500;
+    margin: 0 -16px 32px;
+  }
+  .brand-bar span {
+    color: var(--gold-light);
+    font-weight: 700;
+  }
+
+  /* =============================================
+     進度條
+     ============================================= */
+  .progress-wrap {
+    margin-bottom: 28px;
+  }
+  .progress-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 13px;
+    color: var(--text-light);
+  }
+  .progress-info strong {
+    color: var(--red);
+    font-size: 15px;
+  }
+  .progress-track {
+    height: 6px;
+    background: var(--warm-gray);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--red), var(--gold));
+    border-radius: 999px;
+    transition: width 0.4s ease;
+  }
+
+  /* =============================================
+     畫面區塊（淡入淡出）
+     ============================================= */
+  .screen {
+    display: none;
+    animation: fadeIn 0.4s ease;
+  }
+  .screen.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* =============================================
+     封面畫面
+     ============================================= */
+  .cover-hero {
+    text-align: center;
+    padding: 40px 0 32px;
+  }
+  .cover-badge {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--text-dark);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 16px;
+    border-radius: 999px;
+    letter-spacing: 0.1em;
+    margin-bottom: 20px;
+  }
+  .cover-title {
+    font-size: clamp(26px, 6vw, 40px);
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--red-dark);
+    margin-bottom: 12px;
+  }
+  .cover-subtitle {
+    font-size: 16px;
+    color: var(--text-mid);
+    line-height: 1.7;
+    margin-bottom: 32px;
+  }
+  .cover-illustration {
+    width: 200px;
+    height: 200px;
+    margin: 0 auto 32px;
+    background: linear-gradient(135deg, var(--red-light), var(--gold-light));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 80px;
+    box-shadow: 0 8px 32px var(--shadow);
+  }
+  .cover-meta {
+    background: var(--warm-gray);
+    border-radius: 16px;
+    padding: 20px 24px;
+    text-align: left;
+    margin-bottom: 32px;
+  }
+  .cover-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: var(--text-mid);
+    padding: 6px 0;
+  }
+  .cover-meta-item .icon { font-size: 18px; }
+
+  /* =============================================
+     問題畫面
+     ============================================= */
+  .question-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 999px;
+    margin-bottom: 16px;
+    letter-spacing: 0.05em;
+  }
+  .question-tag.type-lifestyle {
+    background: #FEF9E7;
+    color: #B7950B;
+    border: 1px solid var(--gold-light);
+  }
+  .question-tag.type-claims {
+    background: #FDEDEC;
+    color: var(--red-dark);
+    border: 1px solid var(--red-light);
+  }
+
+  .question-text {
+    font-size: clamp(17px, 4.5vw, 22px);
+    font-weight: 700;
+    line-height: 1.5;
+    color: var(--text-dark);
+    margin-bottom: 28px;
+    min-height: 60px;
+  }
+
+  .options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .option-btn {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    background: var(--white);
+    border: 2px solid #E8D5C4;
+    border-radius: 14px;
+    padding: 16px 18px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    width: 100%;
+    font-family: inherit;
+    font-size: clamp(14px, 3.5vw, 16px);
+    color: var(--text-dark);
+    line-height: 1.5;
+  }
+  .option-btn:hover {
+    border-color: var(--gold);
+    background: #FFFBF2;
+    transform: translateX(4px);
+  }
+  .option-btn.selected {
+    border-color: var(--red);
+    background: #FEF0EE;
+    color: var(--red-dark);
+  }
+  .option-btn.selected .option-letter {
+    background: var(--red);
+    color: var(--white);
+  }
+
+  .option-letter {
+    flex-shrink: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--warm-gray);
+    color: var(--text-mid);
+    font-weight: 700;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+
+  /* =============================================
+     理賠知識題－Popup 彈出視窗
+     ============================================= */
+  .popup-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(44, 24, 16, 0.55);
+    z-index: 500;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 0;
+    animation: backdropIn 0.25s ease;
+  }
+  .popup-backdrop.active { display: flex; }
+
+  @keyframes backdropIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  .popup-sheet {
+    background: var(--white);
+    border-radius: 24px 24px 0 0;
+    padding: 28px 24px 40px;
+    width: 100%;
+    max-width: 680px;
+    animation: sheetUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @keyframes sheetUp {
+    from { transform: translateY(100%); }
+    to   { transform: translateY(0); }
+  }
+
+  .popup-handle {
+    width: 40px;
+    height: 4px;
+    background: #E8D5C4;
+    border-radius: 999px;
+    margin: 0 auto 20px;
+  }
+
+  .popup-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #FDEDEC;
+    color: var(--red-dark);
+    border: 1px solid var(--red-light);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 999px;
+    margin-bottom: 14px;
+    letter-spacing: 0.05em;
+  }
+
+  .popup-text {
+    font-size: 15px;
+    color: var(--text-mid);
+    line-height: 1.8;
+    margin-bottom: 24px;
+  }
+  .popup-text strong { color: var(--red-dark); }
+
+  .popup-close {
+    display: block;
+    width: 100%;
+    background: linear-gradient(135deg, var(--red), var(--red-dark));
+    color: var(--white);
+    border: none;
+    padding: 16px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    box-shadow: 0 4px 16px var(--shadow);
+  }
+
+  /* =============================================
+     導航按鈕
+     ============================================= */
+  .nav-row {
+    display: flex;
+    gap: 12px;
+    margin-top: 32px;
+    align-items: center;
+  }
+  .btn-back {
+    flex-shrink: 0;
+    background: none;
+    border: 2px solid #E8D5C4;
+    color: var(--text-light);
+    padding: 14px 20px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 14px;
+    font-family: inherit;
+    transition: all 0.2s;
+  }
+  .btn-back:hover { border-color: var(--text-mid); color: var(--text-mid); }
+
+  .btn-next {
+    flex: 1;
+    background: linear-gradient(135deg, var(--red), var(--red-dark));
+    color: var(--white);
+    border: none;
+    padding: 16px 24px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.05em;
+    box-shadow: 0 4px 16px var(--shadow);
+  }
+  .btn-next:hover { transform: translateY(-2px); box-shadow: 0 6px 20px var(--shadow); }
+  .btn-next:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  .btn-primary {
+    display: block;
+    width: 100%;
+    background: linear-gradient(135deg, var(--red), var(--red-dark));
+    color: var(--white);
+    border: none;
+    padding: 18px 24px;
+    border-radius: 14px;
+    font-size: 18px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    letter-spacing: 0.08em;
+    box-shadow: 0 4px 20px var(--shadow);
+    transition: all 0.2s;
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px var(--shadow); }
+
+  /* =============================================
+     角色揭曉畫面
+     ============================================= */
+  .result-header {
+    text-align: center;
+    padding: 32px 0 24px;
+  }
+  .result-crown {
+    font-size: 48px;
+    margin-bottom: 8px;
+  }
+  .result-label {
+    font-size: 13px;
+    color: var(--text-light);
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
+  }
+  .result-name {
+    font-size: clamp(28px, 7vw, 40px);
+    font-weight: 700;
+    color: var(--red-dark);
+    margin-bottom: 4px;
+  }
+  .result-emoji {
+    font-size: 40px;
+    margin-bottom: 16px;
+  }
+  .result-desc {
+    background: var(--warm-gray);
+    border-radius: 16px;
+    padding: 20px 24px;
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--text-mid);
+    margin-bottom: 24px;
+    text-align: left;
+  }
+  .result-insight {
+    border-left: 4px solid var(--gold);
+    padding-left: 16px;
+    margin-top: 12px;
+    font-size: 14px;
+    color: var(--text-light);
+    font-style: italic;
+  }
+
+  /* =============================================
+     金句輸入區
+     ============================================= */
+  .motto-section {
+    background: var(--white);
+    border: 2px solid var(--gold-light);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+  .motto-section h3 {
+    font-size: 17px;
+    color: var(--text-dark);
+    margin-bottom: 6px;
+  }
+  .motto-hint {
+    font-size: 13px;
+    color: var(--text-light);
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+  .motto-example {
+    font-size: 13px;
+    color: var(--gold);
+    margin-bottom: 12px;
+    font-style: italic;
+  }
+  .motto-input {
+    width: 100%;
+    border: 2px solid #E8D5C4;
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 16px;
+    font-family: inherit;
+    color: var(--text-dark);
+    background: var(--cream);
+    resize: none;
+    line-height: 1.6;
+    transition: border-color 0.2s;
+    height: 80px;
+  }
+  .motto-input:focus {
+    outline: none;
+    border-color: var(--gold);
+  }
+  .motto-count {
+    text-align: right;
+    font-size: 12px;
+    color: var(--text-light);
+    margin-top: 6px;
+  }
+
+  /* =============================================
+     Email 輸入區
+     ============================================= */
+  .email-section {
+    background: var(--white);
+    border: 2px solid #E8D5C4;
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 28px;
+  }
+  .email-section h3 {
+    font-size: 17px;
+    color: var(--text-dark);
+    margin-bottom: 6px;
+  }
+  .email-note {
+    font-size: 13px;
+    color: var(--text-light);
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+  .email-input {
+    width: 100%;
+    border: 2px solid #E8D5C4;
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 16px;
+    font-family: inherit;
+    color: var(--text-dark);
+    background: var(--cream);
+    transition: border-color 0.2s;
+  }
+  .email-input:focus {
+    outline: none;
+    border-color: var(--red);
+  }
+
+  /* =============================================
+     明信片預覽
+     ============================================= */
+  #screen-postcard { }
+
+  .postcard-intro {
+    text-align: center;
+    padding: 24px 0 20px;
+  }
+  .postcard-intro h2 {
+    font-size: 22px;
+    color: var(--red-dark);
+    margin-bottom: 6px;
+  }
+  .postcard-intro p {
+    font-size: 14px;
+    color: var(--text-light);
+  }
+
+  /* 明信片本體 */
+  .postcard {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+    margin: 0 auto 28px;
+    max-width: 540px;
+    aspect-ratio: 1.5 / 1;
+    background: var(--warm-gray);
+  }
+
+  /* 左半：圖像區 */
+  .postcard-left {
+    position: absolute;
+    left: 0; top: 0;
+    width: 48%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .postcard-avatar {
+    font-size: clamp(50px, 10vw, 70px);
+    margin-bottom: 8px;
+    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.15));
+  }
+  .postcard-char-img {
+    width: clamp(80px, 16vw, 110px);
+    height: clamp(80px, 16vw, 110px);
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid var(--white);
+    margin-bottom: 8px;
+  }
+  .postcard-role-name {
+    font-size: clamp(11px, 2.5vw, 14px);
+    font-weight: 700;
+    color: var(--white);
+    text-align: center;
+    letter-spacing: 0.05em;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  }
+
+  /* 右半：文字區 */
+  .postcard-right {
+    position: absolute;
+    right: 0; top: 0;
+    width: 52%;
+    height: 100%;
+    background: var(--white);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 16px 18px;
+  }
+  .postcard-stamp-area {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 8px;
+  }
+  .postcard-stamp {
+    width: 36px;
+    height: 44px;
+    border: 2px solid var(--gold);
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    background: var(--cream);
+  }
+  .postcard-lines {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+  }
+  .postcard-motto-label {
+    font-size: clamp(9px, 2vw, 11px);
+    color: var(--text-light);
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+  }
+  .postcard-motto-text {
+    font-size: clamp(12px, 2.8vw, 16px);
+    font-weight: 700;
+    color: var(--red-dark);
+    line-height: 1.4;
+    word-break: break-all;
+  }
+  .postcard-divider {
+    width: 40px;
+    height: 2px;
+    background: var(--gold);
+    margin: 8px 0;
+  }
+  .postcard-name-line {
+    font-size: clamp(9px, 2vw, 11px);
+    color: var(--text-light);
+    letter-spacing: 0.05em;
+  }
+  .postcard-bottom-brand {
+    font-size: clamp(8px, 1.8vw, 10px);
+    color: var(--text-light);
+    letter-spacing: 0.1em;
+    text-align: right;
+  }
+
+  /* 金邊框 */
+  .postcard::after {
+    content: '';
+    position: absolute;
+    inset: 6px;
+    border: 2px solid rgba(212,160,23,0.4);
+    border-radius: 15px;
+    pointer-events: none;
+  }
+
+  /* =============================================
+     Email 成功畫面
+     ============================================= */
+  .success-screen {
+    text-align: center;
+    padding: 60px 20px;
+  }
+  .success-icon { font-size: 64px; margin-bottom: 20px; }
+  .success-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--red-dark);
+    margin-bottom: 12px;
+  }
+  .success-text {
+    font-size: 15px;
+    color: var(--text-mid);
+    line-height: 1.8;
+    margin-bottom: 32px;
+  }
+  .success-tip {
+    background: var(--warm-gray);
+    border-radius: 14px;
+    padding: 20px;
+    font-size: 14px;
+    color: var(--text-mid);
+    line-height: 1.7;
+    text-align: left;
+  }
+  .success-tip strong { color: var(--red); }
+
+  /* =============================================
+     送出按鈕區
+     ============================================= */
+  .submit-row {
+    margin-top: 8px;
+  }
+
+  /* =============================================
+     loading 提示
+     ============================================= */
+  .sending-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(255,248,240,0.9);
+    z-index: 999;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .sending-overlay.active { display: flex; }
+  .sending-spinner {
+    width: 48px; height: 48px;
+    border: 4px solid var(--warm-gray);
+    border-top-color: var(--red);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .sending-text { font-size: 16px; color: var(--text-mid); }
+
+  /* =============================================
+     Banner 區塊
+     ============================================= */
+  .banner-wrap {
+    margin: 0 -16px 28px;
+    position: relative;
+    overflow: hidden;
+    max-height: 280px;
+  }
+  .banner-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  /* 🖼️ Banner 圖片設定區（換成你的圖片網址）*/
+  .banner-desktop { display: block; }
+  .banner-mobile  { display: none; }
+
+  /* Logo 區塊 */
+  .logo-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    padding: 16px 0 8px;
+    margin-bottom: 8px;
+  }
+  .logo-bar img {
+    height: 36px;
+    object-fit: contain;
+  }
+  .logo-divider {
+    width: 1px;
+    height: 28px;
+    background: #E8D5C4;
+  }
+
+  /* =============================================
+     RWD — 手機（< 480px）
+     ============================================= */
+  @media (max-width: 480px) {
+    .banner-desktop { display: none; }
+    .banner-mobile  { display: block; }
+    .banner-wrap    { max-height: 200px; }
+
+    .postcard { aspect-ratio: 1.2 / 1; }
+
+    .cover-title    { font-size: 24px; }
+    .cover-subtitle { font-size: 14px; }
+    .cover-illustration { width: 160px; height: 160px; font-size: 64px; }
+
+    .option-btn     { padding: 14px 14px; font-size: 14px; }
+    .question-text  { font-size: 16px; }
+
+    .postcard-motto-text { font-size: 13px; }
+    .postcard-role-name  { font-size: 11px; }
+
+    .btn-primary    { font-size: 16px; padding: 16px; }
+    .btn-next       { font-size: 15px; }
+
+    .logo-bar img   { height: 28px; }
+  }
+
+  /* =============================================
+     RWD — iPad（481px – 1024px）
+     ============================================= */
+  @media (min-width: 481px) and (max-width: 1024px) {
+    .app            { max-width: 720px; padding: 0 24px 60px; }
+    .banner-wrap    { max-height: 260px; }
+
+    .postcard       { max-width: 600px; aspect-ratio: 1.5 / 1; }
+
+    .cover-title    { font-size: 32px; }
+    .option-btn     { font-size: 15px; padding: 16px 18px; }
+    .question-text  { font-size: 19px; }
+
+    .options-list   { gap: 14px; }
+    .logo-bar img   { height: 40px; }
+  }
+
+  /* =============================================
+     RWD — 電腦（> 1024px）
+     ============================================= */
+  @media (min-width: 1025px) {
+    .app            { max-width: 760px; padding: 0 32px 80px; }
+    .banner-wrap    { max-height: 300px; border-radius: 0 0 16px 16px; }
+
+    .postcard       { max-width: 600px; }
+
+    .cover-hero     { padding: 48px 0 36px; }
+    .cover-illustration { width: 220px; height: 220px; font-size: 90px; }
+
+    .options-list   { gap: 14px; }
+    .option-btn     { font-size: 16px; padding: 18px 20px; }
+
+    .motto-section,
+    .email-section  { padding: 28px 32px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Loading Overlay -->
+<div class="sending-overlay" id="sendingOverlay">
+  <div class="sending-spinner"></div>
+  <div class="sending-text">正在寄送您的專屬明信片…</div>
+</div>
+
+<!-- Banner -->
+<div class="banner-wrap">
+  <!-- 🖼️ 換成你的 GitHub Pages 圖片網址 -->
+  <img class="banner-desktop"
+       src="https://你的帳號.github.io/shinkon-quiz/images/banner/banner_desktop.jpg"
+       alt="新光人壽高齡生活展">
+  <img class="banner-mobile"
+       src="https://你的帳號.github.io/shinkon-quiz/images/banner/banner_mobile.jpg"
+       alt="新光人壽高齡生活展">
+</div>
+
+<div class="app">
+  <!-- Logo 欄 -->
+  <div class="logo-bar">
+    <!-- 🖼️ 換成你的 GitHub Pages Logo 網址 -->
+    <img src="https://你的帳號.github.io/shinkon-quiz/images/logos/logo_reU.png" alt="彤鳥社會企業">
+    <div class="logo-divider"></div>
+    <img src="https://你的帳號.github.io/shinkon-quiz/images/logos/logo_shinkon.png" alt="新光人壽">
+  </div>
+
+  <!-- 品牌欄 -->
+  <div class="brand-bar">
+    <span>新光人壽</span>｜高齡生活展
+  </div>
+
+  <!-- 進度條（問卷期間顯示） -->
+  <div class="progress-wrap" id="progressWrap" style="display:none">
+    <div class="progress-info">
+      <span id="progressLabel">第 1 題，共 12 題</span>
+      <strong id="progressPct">8%</strong>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill" style="width:8%"></div>
+    </div>
+  </div>
+
+  <!-- ===== 封面畫面 ===== -->
+  <div class="screen active" id="screen-cover">
+    <div class="cover-hero">
+      <div class="cover-badge">✦ 2分鐘找到你的人生樣態 ✦</div>
+      <h1 class="cover-title">辛苦一輩子<br>下半場，該怎麼活？</h1>
+      <p class="cover-subtitle">12個問題，揭開屬於你的<br>退休人生樣態與保障盲點</p>
+      <!-- 🖼️ 封面插圖：圖片好了之後把 src 換掉，emoji 會自動隱藏 -->
+      <div class="cover-illustration" id="coverIllustration">
+        <img id="coverIllustrationImg"
+             src="https://你的帳號.github.io/shinkon-quiz/images/ui/cover_illustration.png"
+             alt=""
+             style="width:100%;height:100%;object-fit:contain;border-radius:50%"
+             onerror="this.style.display='none';document.getElementById('coverEmoji').style.display='block'">
+        <span id="coverEmoji" style="display:none">🌸</span>
+      </div>
+    </div>
+    <div class="cover-meta">
+      <div class="cover-meta-item"><span class="icon">⏱️</span> 約 2 分鐘完成</div>
+      <div class="cover-meta-item"><span class="icon">🎭</span> 6 種人生樣態，看看你是哪一型</div>
+      <div class="cover-meta-item"><span class="icon">💌</span> 完成後獲得專屬明信片，寄到你的信箱</div>
+      <div class="cover-meta-item"><span class="icon">🔒</span> 資料僅用於寄送明信片，不作其他用途</div>
+    </div>
+    <button class="btn-primary" onclick="startQuiz()">開始探索我的樣態 →</button>
+  </div>
+
+  <!-- ===== 問卷畫面 ===== -->
+  <div class="screen" id="screen-quiz">
+    <div class="question-tag" id="questionTag">🌿 人生階段</div>
+    <div class="question-text" id="questionText"></div>
+    <div class="options-list" id="optionsList"></div>
+    <div class="nav-row">
+      <button class="btn-back" id="btnBack" onclick="prevQuestion()">← 上一題</button>
+      <button class="btn-next" id="btnNext" onclick="nextQuestion()" disabled>繼續 →</button>
+    </div>
+  </div>
+
+  <!-- ===== 角色揭曉 + 金句輸入 ===== -->
+  <div class="screen" id="screen-result">
+    <div class="result-header">
+      <div class="result-crown">🏆</div>
+      <div class="result-label">你的人生樣態是</div>
+      <div class="result-name" id="resultName"></div>
+      <div class="result-emoji" id="resultEmoji"></div>
+    </div>
+    <div class="result-desc">
+      <div id="resultDesc"></div>
+      <div class="result-insight" id="resultInsight"></div>
+    </div>
+
+    <!-- 金句輸入 -->
+    <div class="motto-section">
+      <h3>💬 寫一句話給未來的自己</h3>
+      <p class="motto-hint">這句話會出現在你的專屬明信片上</p>
+      <p class="motto-example" id="mottoExample"></p>
+      <textarea
+        class="motto-input"
+        id="mottoInput"
+        placeholder="在這裡寫下你的金句…"
+        maxlength="40"
+        oninput="updateMottoCount()"
+      ></textarea>
+      <div class="motto-count"><span id="mottoCount">0</span> / 40 字</div>
+    </div>
+
+    <!-- Email 輸入 -->
+    <div class="email-section">
+      <h3>📬 填入信箱，接收你的明信片</h3>
+      <p class="email-note">明信片將寄到以下信箱，請確認正確</p>
+      <input
+        type="email"
+        class="email-input"
+        id="emailInput"
+        placeholder="your@email.com"
+      />
+    </div>
+
+    <div class="submit-row">
+      <button class="btn-primary" onclick="generatePostcard()">產生我的專屬明信片 🎨</button>
+    </div>
+  </div>
+
+  <!-- ===== 明信片預覽 ===== -->
+  <div class="screen" id="screen-postcard">
+    <div class="postcard-intro">
+      <h2>✨ 你的專屬明信片</h2>
+      <p>這是屬於你的人生宣言</p>
+    </div>
+
+    <!-- 明信片 -->
+    <div class="postcard" id="postcardEl">
+      <div class="postcard-left" id="postcardLeft">
+        <img class="postcard-char-img" id="postcardImg" src="" alt="" onerror="this.style.display='none';document.getElementById('postcardEmoji').style.display='block'">
+        <div class="postcard-avatar" id="postcardEmoji" style="display:none"></div>
+        <div class="postcard-role-name" id="postcardRoleName"></div>
+      </div>
+      <div class="postcard-right">
+        <div class="postcard-stamp-area">
+          <div class="postcard-stamp">🔖</div>
+        </div>
+        <div class="postcard-lines">
+          <div class="postcard-motto-label">我的人生金句</div>
+          <div class="postcard-motto-text" id="postcardMotto"></div>
+          <div class="postcard-divider"></div>
+          <div class="postcard-name-line" id="postcardNameLine"></div>
+        </div>
+        <div class="postcard-bottom-brand">新光人壽｜高齡生活展</div>
+      </div>
+    </div>
+
+    <div class="submit-row">
+      <button class="btn-primary" onclick="sendEmail()">📨 寄到我的信箱</button>
+    </div>
+    <div style="text-align:center;margin-top:12px;font-size:13px;color:var(--text-light)">
+      寄送至：<span id="emailDisplay"></span>
+    </div>
+  </div>
+
+  <!-- ===== 成功畫面 ===== -->
+  <div class="screen" id="screen-success">
+    <div class="success-screen">
+      <div class="success-icon">
+        <img src="https://你的帳號.github.io/shinkon-quiz/images/ui/success_illustration.png"
+             alt="" style="width:80px;height:80px;object-fit:contain"
+             onerror="this.style.display='none';document.getElementById('successEmoji').style.display='block'">
+        <span id="successEmoji" style="display:none;font-size:64px">💌</span>
+      </div>
+      <h2 class="success-title">明信片已寄出！</h2>
+      <p class="success-text">
+        你的專屬明信片正在飛往你的信箱<br>
+        記得檢查收件匣（或垃圾郵件匣）
+      </p>
+      <div class="success-tip">
+        <strong>💡 你知道嗎？</strong><br>
+        長照險理賠不是只要「有請看護」就能申請，而是需要經醫生評估，確認在進食、沐浴、如廁等日常生活能力上真的無法自理，才符合理賠條件。<br><br>
+        想深入了解保障規劃？歡迎到展覽現場與我們的顧問聊聊 🌸
+      </div>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<!-- 理賠知識 Popup -->
+<div class="popup-backdrop" id="claimsPopup" onclick="closePopup(event)">
+  <div class="popup-sheet" id="popupSheet">
+    <div class="popup-handle"></div>
+    <div class="popup-tag">📋 理賠小知識</div>
+    <div class="popup-text" id="popupText"></div>
+    <button class="popup-close" onclick="closePopupDirect()">了解了，繼續答題 →</button>
+  </div>
+</div>
+
+<script>
+/* =============================================
+   ✏️ 題目設定區（可自由修改題目文字與選項）
+   - type: 'lifestyle' = 人生階段題（黃色標籤）
+   - type: 'claims'    = 理賠知識題（紅色標籤）
+   - claimsNote: 理賠題專屬的小知識說明（選完後顯示）
+   - scores: 每個選項對應的分數（影響角色分類）
+   ============================================= */
+const QUESTIONS = [
+  // ── 基本資料（Q0，不計入分數，僅記錄）──
+  {
+    id: 'gender',
+    dim: 'info',              // 🔑 僅記錄，不影響角色分類
+    type: 'lifestyle',
+    text: '請問你的性別是？',
+    options: [
+      '男性',
+      '女性',
+      '中性／不便透露'
+    ],
+    scores: [0, 0, 0]         // 不計分，只記錄答案文字
+  },
+
+  // ── 家庭責任維度題（決定 familyScore）──
+  {
+    id: 'family_1',
+    dim: 'family',           // 🔑 維度標記
+    type: 'lifestyle',
+    text: '您目前正處於人生的哪個黃金階段？',
+    options: [
+      '30歲以下：正在探索世界、累積實力',
+      '31–45歲：事業衝刺，可能剛建立小家庭',
+      '46–55歲：事業穩定，開始思考退休生活',
+      '56歲以上：屆退或已退休，享受第二人生'
+    ],
+    scores: [1, 2, 3, 2]    // 56歲以上責任感反而稍降（退休後）
+  },
+  {
+    id: 'family_2',
+    dim: 'family',
+    type: 'lifestyle',
+    text: '目前你的家庭結構最接近哪一種？',
+    options: [
+      '單身或頂客，只需照顧自己',
+      '有伴侶，兩人互相依靠',
+      '有小孩，家庭還在成長中',
+      '上有長輩需要照顧，下有孩子要養'
+    ],
+    scores: [1, 2, 3, 4]
+  },
+  {
+    id: 'family_3',
+    dim: 'family',
+    type: 'lifestyle',
+    text: '如果長輩突然需要長照，你的後援狀態如何？',
+    options: [
+      '我只需照顧好自己，一人飽全家飽',
+      '有兄弟姊妹可以平均分攤',
+      '雖然有手足，但多數落在我身上',
+      '我是獨生子女／主要照顧者，只能靠自己'
+    ],
+    scores: [1, 2, 3, 4]
+  },
+  {
+    id: 'family_4',
+    dim: 'family',
+    type: 'lifestyle',
+    text: '如果「長照需求」明天就發生，你最擔心的是？',
+    options: [
+      '拖累未來的自己，導致夢想中斷',
+      '拖累另一半或小孩，讓他們壓力大',
+      '手邊現金不夠支付每月看護費',
+      '找不到合適的照護資源，沒人能幫我'
+    ],
+    scores: [1, 3, 4, 2]
+  },
+
+  // ── 理賠認知維度題（Q5–Q10，決定 claimsScore）──
+  {
+    id: 'claims_1',
+    dim: 'claims',
+    type: 'claims',
+    text: '老王中風住院，家屬向保險公司申請長照險理賠卻被退件。最可能的原因是？',
+    options: [
+      '保險公司都是騙人的，收錢快、理賠慢',
+      '老王買的額度太低，或沒有住院所以不賠',
+      '老王得的病不在理賠項目裡',
+      '長照險需評估日常生活能力是否無法自理，非看有無請看護'
+    ],
+    scores: [1, 2, 3, 4],
+    claimsNote: '✅ 正確答案是 D。長照險的理賠關鍵在於「巴氏量表」評估，需確認以下<strong>六項日常活動</strong>無法自理，才符合條件：<br>①進食　②沐浴　③如廁　④更衣　⑤移位　⑥平地行動<br>並非單純住院或請看護即可申請。'
+  },
+  {
+    id: 'claims_2',
+    dim: 'claims',
+    type: 'claims',
+    text: '長照險每月理賠 3 萬元。關於後續領取方式，哪個說法最正確？',
+    options: [
+      '第一次審核過，之後每月自動匯入直到終老',
+      '每年把看護收據寄給保險公司就能繼續領',
+      '每年去醫院開生存證明就能繼續領',
+      '每年需重新提診斷證明，確認長照狀態持續；若康復則停止'
+    ],
+    scores: [1, 2, 3, 4],
+    claimsNote: '✅ 正確答案是 D。長照扶助金每年需重新確認失能或失智狀態仍持續，保險公司才會繼續給付。若狀況改善恢復自理，理賠將依條款停止。<br><br>💡 <strong>例外規定：</strong>若「生理功能障礙」連續申請滿 5 年，或「認知功能障礙」連續申請滿 3 年，之後每年僅需檢附被保人生存證明即可申請，無需重新備齊完整文件。惟本公司基於審核需要，必要時得要求重新檢具申領長期照顧分期保險金應備文件（詳參保單條款）。'
+  },
+  {
+    id: 'claims_3',
+    dim: 'claims',
+    type: 'claims',
+    text: '假設活到 85 歲，哪種情況最可能讓你感到財務恐慌？',
+    options: [
+      '沒想過那麼遠，反正總會有辦法',
+      '生活費被通膨吃掉，退休金只能省吃儉用',
+      '年輕時買的醫療險，不夠賠達文西手術或標靶藥物費用',
+      '需要全天看護，每月燒掉 5–8 萬元，積蓄快見底'
+    ],
+    scores: [1, 2, 3, 4],
+    claimsNote: '💡 全天看護每月費用約 5–8 萬元，一年就是 60–96 萬。若沒有長照險或失能扶助金支撐，退休積蓄可能在數年內耗盡。'
+  },
+  {
+    id: 'claims_4',
+    dim: 'claims',
+    type: 'claims',
+    text: '你認為「保險」在退休或長照階段，最關鍵的功能是？',
+    options: [
+      '不太清楚，就是生病住院時拿回一點錢',
+      '幫忙支付龐大手術費，減輕當下負擔',
+      '提供每月長照金，讓我請看護不用看臉色',
+      '像防火牆，守護退休金，避免因病「資產歸零」'
+    ],
+    scores: [1, 2, 3, 4],
+    claimsNote: '✅ 保險最進階的功能是「防火牆」概念：讓你辛苦累積的退休資產，不因一場大病或長期失能而歸零。規劃保險就是在保護你的財務自由。'
+  },
+
+  // ── 理賠心理障礙題（Q9–Q12，也計入 claimsScore）──
+  {
+    id: 'claims_5',
+    dim: 'claims',
+    type: 'claims',
+    text: '說到向保險公司申請理賠，你心裡第一個浮現的感覺是？',
+    options: [
+      '很不放心，聽說很多人都申請失敗',
+      '有點擔心，怕被找理由拒賠',
+      '希望一輩子都用不到，沒想太多',
+      '應該很順利，有買有保障，搞懂條件就好'
+    ],
+    scores: [1, 2, 3, 4],
+    claimsNote: '📊 拒賠率其實遠低於大眾印象。台灣壽險業整體理賠申請核付率超過 97%。多數拒賠來自「不符合條款定義的狀態」，而非保險公司刁難——搞懂條件才是關鍵。'
+  },
+  {
+    id: 'claims_6',
+    dim: 'claims',
+    type: 'claims',
+    text: '關於「長照險」，你覺得哪個說法是正確的？',
+    options: [
+      '只要住院超過一定天數，就可以申請長照理賠',
+      '請了外籍看護或住進安養中心，就符合申請條件',
+      '有健保給付的項目，長照險就不會再賠了',
+      '需要醫生評估「日常生活自理能力」，達標才能申請'
+    ],
+    scores: [1, 2, 2, 4],
+    claimsNote: '✅ 正確是 D。長照險核心是「巴氏量表」，評估以下<strong>六項日常活動</strong>自理能力：<br>①進食　②沐浴　③如廁　④更衣　⑤移位　⑥平地行動<br>住院或請看護是結果，不是觸發條件。健保與長照險各自獨立給付，不互相抵扣。'
+  },
+  {
+    id: 'claims_7',
+    dim: 'claims',
+    type: 'lifestyle',
+    text: '對於「買保險」，你最大的顧慮是什麼？',
+    options: [
+      '怕繳了幾十年保費，最後剛好不在理賠範圍，白繳了',
+      '怕生病時根本沒力氣處理繁瑣的申請程序',
+      '怕保險公司經營不善倒閉，保單變廢紙',
+      '其實沒有特別擔心，就是還沒認真去研究'
+    ],
+    scores: [2, 3, 2, 1],
+    claimsNote: '💡 申請程序：目前多數保險公司支援線上申請，也可委託家人或業務員代辦。公司倒閉：台灣有「安定基金」保障機制，即使保險公司倒閉，保單仍有一定保障上限。'
+  },
+  {
+    id: 'claims_8',
+    dim: 'claims',
+    type: 'lifestyle',
+    text: '如果朋友問你「為什麼還沒規劃長照保障」，你最可能的回答是？',
+    options: [
+      '我還年輕，等老了再說就好',
+      '到時候家人會照顧我，應該不用擔心',
+      '我有存錢，用存款應付應該沒問題',
+      '我有想過，但不知道從哪裡開始規劃'
+    ],
+    scores: [1, 1, 2, 3],
+    claimsNote: '💡 全天看護每月約 5–8 萬，若需要 5 年以上長照，光靠存款很可能在最需要錢的時候見底。長照保障的最佳規劃時機，往往是「你還不需要它的時候」。'
+  },
+
+  // ── 財務規劃態度題（Q13–Q16，輔助判斷）──
+  {
+    id: 'finance_1',
+    dim: 'finance',
+    type: 'lifestyle',
+    text: '談到錢，你最接近哪一種態度？',
+    options: [
+      '活在當下，錢夠用就好',
+      '努力存錢，但不太懂投資理財',
+      '有做一些規劃，但對風險不是很確定',
+      '積極管理資產，清楚知道自己的財務狀況'
+    ],
+    scores: [1, 2, 3, 4]
+  },
+  {
+    id: 'finance_2',
+    dim: 'finance',
+    type: 'lifestyle',
+    text: '你對「保險」的整體印象比較接近哪一種？',
+    options: [
+      '對保險有些不信任，覺得理賠很難',
+      '必要的花費，但太複雜看不懂',
+      '買了就安心，細節交給業務員',
+      '我會主動研究，確認自己買對了'
+    ],
+    scores: [1, 2, 3, 4]
+  },
+  {
+    id: 'finance_3',
+    dim: 'finance',
+    type: 'lifestyle',
+    text: '哪一種情況最容易成為吃掉老本的「財務黑洞」？',
+    options: [
+      '自己太愛旅遊消費，過度享受生活',
+      '孩子買房結婚需要金援，捨不得不幫',
+      '父母倒下需長期照護，身為子女必須扛',
+      '自己未來失能失智，花大錢請人照顧自己'
+    ],
+    scores: [1, 2, 3, 4]
+  },
+  {
+    id: 'finance_4',
+    dim: 'finance',
+    type: 'lifestyle',
+    text: '退休後，你最希望的生活模樣是？',
+    options: [
+      '到處旅行、追求夢想，活得精彩',
+      '陪伴家人、帶孫、過平靜日子',
+      '繼續做點喜歡的工作或志願服務',
+      '只要身體健康、不拖累別人就夠了'
+    ],
+    scores: [2, 3, 1, 4]
+  }
+];
+
+/* =============================================
+   🎭 角色設定區（可自由修改名稱、描述、圖片）
+   分類邏輯：家庭責任（familyScore）× 理賠認知（claimsScore）兩維度交叉
+   ─────────────────────────────────────────
+   familyScore 低（4–8）  = 輕責任
+   familyScore 中（9–12） = 中責任
+   familyScore 高（13–16）= 重責任
+
+   claimsScore 低（8–17） = 認知低
+   claimsScore 高（18–32）= 認知高
+   ============================================= */
+const CHARACTERS = [
+  {
+    id: 'enjoy',
+    familyLevel: 'low',   // 輕責任
+    claimsLevel: 'low',   // 理賠認知低
+    name: '無憂享樂派',
+    emoji: '🌸',
+    leftBg: 'linear-gradient(135deg, #F48FB1, #CE93D8)',
+    desc: '你活在當下，享受生命每一刻的美好。對於「老後」這件事，你覺得那是很遠的事，或是相信船到橋頭自然直。',
+    insight: '保障盲點：對理賠機制和長照費用的實際金額較陌生，可能低估了風險。',
+    mottoHint: '例如：「享受當下，也為未來的自己留一道安全網」',
+    imgFemale: '', imgMale: '', imgNeutral: ''
+  },
+  {
+    id: 'wise',
+    familyLevel: 'low',   // 輕責任
+    claimsLevel: 'high',  // 理賠認知高
+    name: '智慧掌舵家',
+    emoji: '🏆',
+    leftBg: 'linear-gradient(135deg, #BA68C8, #7E57C2)',
+    desc: '你財務規劃完善、理賠知識清晰。即使家庭負擔不重，你深知未雨綢繆的重要，早早為自己築好防火牆。',
+    insight: '你的優勢：對長照險理賠機制的理解超越大多數人，是自己最好的守護者。',
+    mottoHint: '例如：「懂保險的人，才是自己最大的安全感來源」',
+    imgFemale: '', imgMale: '', imgNeutral: ''
+  },
+  {
+    id: 'anxious',
+    familyLevel: 'mid',   // 中責任
+    claimsLevel: 'low',   // 理賠認知低
+    name: '焦慮摸索者',
+    emoji: '🔍',
+    leftBg: 'linear-gradient(135deg, #64B5F6, #4FC3F7)',
+    desc: '你開始意識到老後風險，也買了一些保險，但心裡還是沒把握——不確定自己買的夠不夠、對不對。',
+    insight: '保障盲點：有保險意識但對理賠細節模糊，容易在需要時才發現保障有缺口。',
+    mottoHint: '例如：「搞懂理賠，才能讓每一分保費花在刀口上」',
+    imgFemale: '', imgMale: '', imgNeutral: ''
+  },
+  {
+    id: 'steady',
+    familyLevel: 'mid',   // 中責任
+    claimsLevel: 'high',  // 理賠認知高
+    name: '穩健守護者',
+    emoji: '🛡️',
+    leftBg: 'linear-gradient(135deg, #81C784, #4DB6AC)',
+    desc: '你已做好基本退休規劃，重視資產保全，清楚保險的功能。你知道風險在哪裡，也知道怎麼應對。',
+    insight: '你的優勢：對保障規劃有清晰認識，是家人最可靠的後盾。',
+    mottoHint: '例如：「守住一輩子的積累，不讓病痛歸零你的努力」',
+    imgFemale: '', imgMale: '', imgNeutral: ''
+  },
+  {
+    id: 'warrior',
+    familyLevel: 'high',  // 重責任
+    claimsLevel: 'low',   // 理賠認知低
+    name: '責任衝鋒手',
+    emoji: '💼',
+    leftBg: 'linear-gradient(135deg, #FFB74D, #FF8A65)',
+    desc: '上有老、下有小，你是家裡的頂梁柱。你知道保障很重要，但忙碌的生活讓你沒時間深入研究細節。',
+    insight: '保障盲點：可能已有基礎保險但不清楚理賠條件，一旦發生狀況可能不知如何申請。',
+    mottoHint: '例如：「愛家人，就讓保障跑在風險前面」',
+    imgFemale: '', imgMale: '', imgNeutral: ''
+  },
+  {
+    id: 'carefree',
+    familyLevel: 'high',  // 重責任
+    claimsLevel: 'high',  // 理賠認知高
+    name: '瀟灑自在人',
+    emoji: '🌺',
+    leftBg: 'linear-gradient(135deg, #FFAB40, #FF7043)',
+    desc: '責任重、但心態穩。你不只照顧好家人，也把自己的保障規劃得很清楚，活得有底氣、有餘裕。',
+    insight: '你的優勢：理賠知識扎實，即使身負重任仍能從容應對人生風險。',
+    mottoHint: '例如：「為家人撐傘，也別忘了為自己留一把」',
+    imgFemale: '', imgMale: '', imgNeutral: ''
+  }
+];
+
+/* =============================================
+   ⚙️ Google Sheets 串接設定
+   步驟：建立 Apps Script → 部署為 Web App → 貼上網址
+   ============================================= */
+const GOOGLE_SHEET_URL = '';
+// 👆 將 Google Apps Script 部署後的網址貼在這裡（設定說明文件有詳細步驟）
+
+/* =============================================
+   狀態管理
+   ============================================= */
+let currentQ    = 0;
+let answers     = [];      // 每題選到的分數
+let answerTexts = [];      // 每題選到的文字（傳給 Sheets）
+let familyScore = 0;
+let claimsScore = 0;
+let financeScore = 0;
+let selectedChar = null;
+let userMotto = '';
+let userEmail = '';
+
+/* =============================================
+   問卷邏輯
+   ============================================= */
+function startQuiz() {
+  showScreen('screen-quiz');
+  document.getElementById('progressWrap').style.display = 'block';
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = QUESTIONS[currentQ];
+  const total = QUESTIONS.length;
+
+  // 進度
+  const pct = Math.round(((currentQ) / total) * 100) + '%';
+  document.getElementById('progressLabel').textContent = `第 ${currentQ + 1} 題，共 ${total} 題`;
+  document.getElementById('progressPct').textContent = pct;
+  document.getElementById('progressFill').style.width = pct;
+
+  // 題型標籤
+  const tag = document.getElementById('questionTag');
+  if (q.type === 'claims') {
+    tag.className = 'question-tag type-claims';
+    tag.textContent = '📋 理賠知識';
+  } else {
+    tag.className = 'question-tag type-lifestyle';
+    tag.textContent = '🌿 人生探索';
+  }
+
+  // 題目
+  document.getElementById('questionText').textContent = q.text;
+
+  // 選項
+  const list = document.getElementById('optionsList');
+  list.innerHTML = '';
+  const letters = ['A', 'B', 'C', 'D'];
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.innerHTML = `<span class="option-letter">${letters[i]}</span><span>${opt}</span>`;
+    const prevAnswer = answers[currentQ];
+    if (prevAnswer !== undefined && q.scores[i] === prevAnswer) {
+      btn.classList.add('selected');
+    }
+    btn.onclick = () => selectOption(i, btn);
+    list.appendChild(btn);
+  });
+
+  // 按鈕狀態
+  document.getElementById('btnBack').style.display = currentQ === 0 ? 'none' : 'inline-flex';
+  document.getElementById('btnNext').disabled = answers[currentQ] === undefined;
+  document.getElementById('btnNext').textContent = currentQ === total - 1 ? '查看我的樣態 🎭' : '繼續 →';
+}
+
+function selectOption(idx, btnEl) {
+  document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+  btnEl.classList.add('selected');
+  const q = QUESTIONS[currentQ];
+  answers[currentQ]     = q.scores[idx];
+  answerTexts[currentQ] = q.options[idx];   // 記錄文字答案給 Sheets
+  document.getElementById('btnNext').disabled = false;
+
+  // 若是理賠題，延遲 300ms 後彈出 popup
+  if (q.claimsNote) {
+    setTimeout(() => {
+      document.getElementById('popupText').innerHTML = q.claimsNote;
+      document.getElementById('claimsPopup').classList.add('active');
+    }, 300);
+  }
+}
+
+function closePopup(e) {
+  // 點擊背景關閉（點 sheet 本身不關）
+  if (e.target === document.getElementById('claimsPopup')) {
+    closePopupDirect();
+  }
+}
+
+function closePopupDirect() {
+  document.getElementById('claimsPopup').classList.remove('active');
+}
+
+function nextQuestion() {
+  if (answers[currentQ] === undefined) return;
+  currentQ++;
+  if (currentQ >= QUESTIONS.length) {
+    showResult();
+  } else {
+    renderQuestion();
+  }
+}
+
+function prevQuestion() {
+  if (currentQ === 0) return;
+  currentQ--;
+  renderQuestion();
+}
+
+/* =============================================
+   角色判斷（家庭責任 × 理賠認知 兩維度）
+   ============================================= */
+function showResult() {
+  // 分維度加總
+  familyScore  = 0;
+  claimsScore  = 0;
+  financeScore = 0;
+  QUESTIONS.forEach((q, i) => {
+    const s = answers[i] || 0;
+    if (q.dim === 'family')  familyScore  += s;
+    if (q.dim === 'claims')  claimsScore  += s;
+    if (q.dim === 'finance') financeScore += s;
+  });
+
+  // ── 家庭責任等級（4–16 分）──────────────────────────
+  // 邊界區間 8–9：用財務分數決勝
+  //   財務高（11–16）→ 責任感較輕鬆 → low
+  //   財務低（4–10） → 責任感較沉重 → mid
+  let familyLevel;
+  if      (familyScore <= 7)  familyLevel = 'low';
+  else if (familyScore <= 9)  familyLevel = financeScore >= 11 ? 'low' : 'mid';  // 邊界
+  else if (familyScore <= 12) familyLevel = 'mid';
+  else                        familyLevel = 'high';
+
+  // ── 理賠認知等級（8–32 分）──────────────────────────
+  // 邊界區間 15–20：用財務分數決勝
+  //   財務高（11–16）→ 整體規劃意識強 → high
+  //   財務低（4–10） → 整體規劃意識弱 → low
+  let claimsLevel;
+  if      (claimsScore <= 14) claimsLevel = 'low';
+  else if (claimsScore <= 20) claimsLevel = financeScore >= 11 ? 'high' : 'low';  // 邊界
+  else                        claimsLevel = 'high';
+
+  // ── 找對應角色 ──────────────────────────────────────
+  selectedChar = CHARACTERS.find(c =>
+    c.familyLevel === familyLevel && c.claimsLevel === claimsLevel
+  ) || CHARACTERS[0];
+
+  document.getElementById('progressWrap').style.display = 'none';
+  showScreen('screen-result');
+
+  document.getElementById('resultName').textContent    = selectedChar.name;
+  document.getElementById('resultEmoji').textContent   = selectedChar.emoji;
+  document.getElementById('resultDesc').textContent    = selectedChar.desc;
+  document.getElementById('resultInsight').textContent = selectedChar.insight;
+  document.getElementById('mottoExample').textContent  = selectedChar.mottoHint;
+}
+
+/* =============================================
+   金句字數計數
+   ============================================= */
+function updateMottoCount() {
+  const val = document.getElementById('mottoInput').value;
+  document.getElementById('mottoCount').textContent = val.length;
+}
+
+/* =============================================
+   🖼️ 圖片根目錄設定（換成你的 GitHub Pages 網址）
+   ============================================= */
+const IMG_BASE = 'https://你的帳號.github.io/shinkon-quiz/images';
+
+function getCharacterImageUrl(char, genderAnswer) {
+  // 根據 Q1 性別答案選擇對應圖片
+  let suffix = 'neutral';
+  if (genderAnswer === '女性') suffix = 'female';
+  else if (genderAnswer === '男性') suffix = 'male';
+  const url = char.imgNeutral || `${IMG_BASE}/characters/${char.id}_${suffix}.png`;
+  return url;
+}
+
+/* =============================================
+   產生明信片
+   ============================================= */
+function generatePostcard() {
+  const motto = document.getElementById('mottoInput').value.trim();
+  const email = document.getElementById('emailInput').value.trim();
+
+  if (!motto) {
+    alert('請先寫下你的金句！');
+    document.getElementById('mottoInput').focus();
+    return;
+  }
+  if (!email || !email.includes('@')) {
+    alert('請填入有效的 Email 地址');
+    document.getElementById('emailInput').focus();
+    return;
+  }
+
+  userMotto = motto;
+  userEmail = email;
+
+  // 填入明信片
+  const char = selectedChar;
+  document.getElementById('postcardMotto').textContent = motto;
+  document.getElementById('postcardRoleName').textContent = char.name + ' ' + char.emoji;
+  document.getElementById('postcardNameLine').textContent = char.name;
+  document.getElementById('emailDisplay').textContent = email;
+  document.getElementById('postcardEmoji').textContent = char.emoji;
+
+  // 設定左側背景
+  document.getElementById('postcardLeft').style.background = char.leftBg;
+
+  // 設定角色圖片（依性別自動對應）
+  const img = document.getElementById('postcardImg');
+  const genderAnswer = answerTexts[0] || '';
+  const imgUrl = getCharacterImageUrl(char, genderAnswer);
+  img.src = imgUrl;
+  img.style.display = 'block';
+  document.getElementById('postcardEmoji').style.display = 'none';
+  // 圖片載入失敗時顯示 emoji
+  img.onerror = function() {
+    this.style.display = 'none';
+    document.getElementById('postcardEmoji').style.display = 'block';
+  };
+
+  showScreen('screen-postcard');
+}
+
+/* =============================================
+   寄送資料至 Google Sheets + 觸發 Email
+   ============================================= */
+async function sendEmail() {
+  document.getElementById('sendingOverlay').classList.add('active');
+
+  // 組裝每題答案（題目ID + 選項文字 + 分數）
+  const questionDetails = QUESTIONS.map((q, i) => ({
+    qid:    q.id,
+    dim:    q.dim,
+    q:      q.text,
+    ans:    answerTexts[i] || '',
+    score:  answers[i]    || 0
+  }));
+
+  const payload = {
+    timestamp:    new Date().toISOString(),
+    email:        userEmail,
+    gender:       answerTexts[0] || '',   // 第一題為性別
+    character:    selectedChar.name,
+    emoji:        selectedChar.emoji,
+    motto:        userMotto,
+    familyScore:  familyScore,
+    claimsScore:  claimsScore,
+    financeScore: financeScore,
+    answers:      questionDetails   // 每題完整答案
+  };
+
+  try {
+    if (GOOGLE_SHEET_URL) {
+      await fetch(GOOGLE_SHEET_URL, {
+        method: 'POST',
+        mode:   'no-cors',          // Apps Script 需要 no-cors
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    } else {
+      // 測試模式：尚未設定 Sheets URL，模擬延遲
+      await new Promise(r => setTimeout(r, 1500));
+      console.log('📊 測試模式資料：', payload);
+    }
+  } catch (e) {
+    console.warn('資料傳送失敗：', e);
+    // 即使失敗也繼續，不影響展覽體驗
+  }
+
+  document.getElementById('sendingOverlay').classList.remove('active');
+  showScreen('screen-success');
+}
+
+/* =============================================
+   畫面切換
+   ============================================= */
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
