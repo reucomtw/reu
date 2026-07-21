@@ -846,23 +846,26 @@
 </div>
 
 <!-- Banner -->
-<div class="banner-wrap">
-  <!-- 🖼️ 換成你的 GitHub Pages 圖片網址 -->
+<div class="banner-wrap" id="bannerWrap">
+  <!-- 🖼️ 圖片好了放進 images/banner/ 資料夾即自動顯示 -->
   <img class="banner-desktop"
-       src="images/banner/banner_desktop.jpg"
-       alt="新光人壽高齡生活展">
+       src="/reu/images/banner/banner_desktop.jpg"
+       alt=""
+       onerror="document.getElementById('bannerWrap').style.display='none'">
   <img class="banner-mobile"
-       src="images/banner/banner_mobile.jpg"
-       alt="新光人壽高齡生活展">
+       src="/reu/images/banner/banner_mobile.jpg"
+       alt=""
+       onerror="this.style.display='none'">
 </div>
 
 <div class="app">
-  <!-- Logo 欄 -->
-  <div class="logo-bar">
-    <!-- 🖼️ 換成你的 GitHub Pages Logo 網址 -->
-    <img src="images/logos/logo_reU.png" alt="彤鳥社會企業">
-    <div class="logo-divider"></div>
-    <img src="images/logos/logo_shinkon.png" alt="新光人壽">
+  <!-- Logo 欄：圖片好了放進 images/logos/ 即自動顯示 -->
+  <div class="logo-bar" id="logoBar">
+    <img src="/reu/images/logos/logo_reU.png" alt="彤鳥社會企業"
+         onerror="this.style.display='none';checkLogoBar()">
+    <div class="logo-divider" id="logoDivider"></div>
+    <img src="/reu/images/logos/logo_shinkon.png" alt="新光人壽"
+         onerror="this.style.display='none';checkLogoBar()">
   </div>
 
   <!-- 品牌欄 -->
@@ -890,7 +893,7 @@
       <!-- 🖼️ 封面插圖：圖片好了之後把 src 換掉，emoji 會自動隱藏 -->
       <div class="cover-illustration" id="coverIllustration">
         <img id="coverIllustrationImg"
-             src="images/ui/cover_illustration.png"
+             src="/reu/images/ui/cover_illustration.png"
              alt=""
              style="width:100%;height:100%;object-fit:contain;border-radius:50%"
              onerror="this.style.display='none';document.getElementById('coverEmoji').style.display='block'">
@@ -1002,7 +1005,7 @@
   <div class="screen" id="screen-success">
     <div class="success-screen">
       <div class="success-icon">
-        <img src="images/ui/success_illustration.png"
+        <img src="/reu/images/ui/success_illustration.png"
              alt="" style="width:80px;height:80px;object-fit:contain"
              onerror="this.style.display='none';document.getElementById('successEmoji').style.display='block'">
         <span id="successEmoji" style="display:none;font-size:64px">💌</span>
@@ -1389,6 +1392,17 @@ let userEmail = '';
 /* =============================================
    問卷邏輯
    ============================================= */
+function checkLogoBar() {
+  // 兩個 logo 都載入失敗時，隱藏整個 logo 欄和分隔線
+  const imgs = document.querySelectorAll('#logoBar img');
+  const allHidden = Array.from(imgs).every(img => img.style.display === 'none');
+  if (allHidden) {
+    document.getElementById('logoBar').style.display = 'none';
+  } else {
+    document.getElementById('logoDivider').style.display = 'none';
+  }
+}
+
 function startQuiz() {
   showScreen('screen-quiz');
   document.getElementById('progressWrap').style.display = 'block';
@@ -1544,7 +1558,7 @@ function updateMottoCount() {
 /* =============================================
    🖼️ 圖片根目錄設定（換成你的 GitHub Pages 網址）
    ============================================= */
-const IMG_BASE = 'images';
+const IMG_BASE = '/reu/images';
 
 function getCharacterImageUrl(char, genderAnswer) {
   // 根據 Q1 性別答案選擇對應圖片
