@@ -1645,10 +1645,10 @@ async function sendEmail() {
     const maxWidth   = W - 100;
     const lineHeight = 64;
     const mottoY     = roleY + 52;
-    wrapText(ctx, userMotto, W / 2, mottoY, maxWidth, lineHeight);
+    const mottoLines = wrapText(ctx, userMotto, W / 2, mottoY, maxWidth, lineHeight);
 
     // 金色分隔線
-    const lineY = mottoY + lineHeight * Math.ceil(ctx.measureText(userMotto).width / maxWidth + 1) + 16;
+    const lineY = mottoY + lineHeight * mottoLines + 16;
     ctx.strokeStyle = '#D4A017';
     ctx.lineWidth   = 3;
     ctx.beginPath();
@@ -1800,10 +1800,10 @@ async function downloadPostcard() {
     const maxWidth  = W - 100;
     const lineHeight = 64;
     const mottoY = roleY + 52;
-    wrapText(ctx, mottoText, W / 2, mottoY, maxWidth, lineHeight);
+    const mottoLines = wrapText(ctx, mottoText, W / 2, mottoY, maxWidth, lineHeight);
 
     // ── 6. 金色分隔線 ──────────────────────────
-    const lineY = mottoY + lineHeight * Math.ceil(ctx.measureText(mottoText).width / maxWidth + 1) + 16;
+    const lineY = mottoY + lineHeight * mottoLines + 16;
     ctx.strokeStyle = '#D4A017';
     ctx.lineWidth   = 3;
     ctx.beginPath();
@@ -1860,22 +1860,28 @@ function loadImage(url) {
   });
 }
 
-// Canvas 自動換行
+// Canvas 自動換行（回傳實際行數）
 function wrapText(ctx, text, x, y, maxWidth, lineH) {
   const chars = text.split('');
-  let line = '';
+  let line  = '';
   let lineY = y;
+  let lines = 0;
   for (let i = 0; i < chars.length; i++) {
     const test = line + chars[i];
     if (ctx.measureText(test).width > maxWidth && line !== '') {
       ctx.fillText(line, x, lineY);
-      line  = chars[i];
+      line   = chars[i];
       lineY += lineH;
+      lines++;
     } else {
       line = test;
     }
   }
-  if (line) ctx.fillText(line, x, lineY);
+  if (line) {
+    ctx.fillText(line, x, lineY);
+    lines++;
+  }
+  return lines;  // 回傳實際行數
 }
 
 /* =============================================
