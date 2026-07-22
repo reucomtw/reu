@@ -559,7 +559,7 @@
     box-shadow: 0 12px 40px rgba(0,0,0,0.2);
     margin: 0 auto 28px;
     max-width: 480px;
-    aspect-ratio: 3 / 5;   /* 더 길게 — 이미지가 더 많이 보임 */
+    aspect-ratio: 1055 / 1491;   /* 더 길게 — 이미지가 더 많이 보임 */
     background: var(--warm-gray);
   }
 
@@ -724,7 +724,7 @@
   @media (max-width: 480px) {
     .banner-wrap    { max-height: 200px; }
 
-    .postcard { aspect-ratio: 3 / 5; max-width: 360px; }
+    .postcard { aspect-ratio: 1055 / 1491; max-width: 360px; }
 
     .cover-title    { font-size: 24px; }
     .cover-subtitle { font-size: 14px; }
@@ -749,7 +749,7 @@
     .app            { max-width: 720px; padding: 0 24px 60px; }
     .banner-wrap    { max-height: 260px; }
 
-    .postcard       { max-width: 400px; aspect-ratio: 3 / 5; }
+    .postcard       { max-width: 400px; aspect-ratio: 1055 / 1491; }
 
     .cover-title    { font-size: 32px; }
     .option-btn     { font-size: 15px; padding: 16px 18px; }
@@ -1627,8 +1627,8 @@ async function downloadPostcard() {
     const motto  = userMotto;
     const gender = answerTexts[0] || '';
 
-    // 輸出尺寸 1080×1440（3:4 直式）
-    const W = 1080, H = 1440;
+    // 輸出尺寸統一為 1055×1491（配合大多數角色圖比例）
+    const W = 1055, H = 1491;
     const canvas = document.createElement('canvas');
     canvas.width  = W;
     canvas.height = H;
@@ -1644,7 +1644,7 @@ async function downloadPostcard() {
 
     // ── 2. 畫背景（角色圖 or 漸層色）──────────
     // 先建立圓角裁切路徑
-    const radius = 60;
+    const radius = 55;
     ctx.beginPath();
     ctx.moveTo(radius, 0);
     ctx.lineTo(W - radius, 0);
@@ -1675,41 +1675,41 @@ async function downloadPostcard() {
       ctx.fillRect(0, 0, W, H);
     }
 
-    // ── 3. 半透明白色緞帶（下方 38%）─────────
-    const ribbonY = H * 0.62;
+    // ── 3. 半透明白色緞帶（下方 32%）─────────
+    const ribbonY = H * 0.68;
     const ribbonH = H - ribbonY;
     ctx.fillStyle = 'rgba(255, 255, 255, 0.88)';
     ctx.fillRect(0, ribbonY, W, ribbonH);
 
     // ── 4. 角色名稱 ────────────────────────────
-    const roleY = ribbonY + 60;
-    ctx.font = 'bold 38px serif';
+    const roleY = ribbonY + 55;
+    ctx.font = 'bold 34px serif';
     ctx.fillStyle = '#C0392B';
     ctx.textAlign = 'center';
     ctx.fillText(`◆ ${char.name}`, W / 2, roleY);
 
     // ── 5. 金句文字（自動換行）─────────────────
-    ctx.font = 'bold 58px serif';
+    ctx.font = 'bold 52px serif';
     ctx.fillStyle = '#2C1810';
     const mottoText = `「${motto}」`;
     const maxWidth  = W - 120;
-    const lineHeight = 80;
-    const mottoY = roleY + 70;
+    const lineHeight = 74;
+    const mottoY = roleY + 65;
     wrapText(ctx, mottoText, W / 2, mottoY, maxWidth, lineHeight);
 
     // ── 6. 金色分隔線 ──────────────────────────
-    const lineY = mottoY + lineHeight * Math.ceil(mottoText.length / 14) + 30;
+    const lineY = mottoY + lineHeight * Math.ceil(mottoText.length / 15) + 24;
     ctx.strokeStyle = '#D4A017';
     ctx.lineWidth   = 4;
     ctx.beginPath();
-    ctx.moveTo(W / 2 - 60, lineY);
-    ctx.lineTo(W / 2 + 60, lineY);
+    ctx.moveTo(W / 2 - 55, lineY);
+    ctx.lineTo(W / 2 + 55, lineY);
     ctx.stroke();
 
     // ── 7. 品牌文字 ────────────────────────────
-    ctx.font = '30px serif';
+    ctx.font = '28px serif';
     ctx.fillStyle = '#A0826D';
-    ctx.fillText('新光人壽｜「再青春」下半場', W / 2, lineY + 50);
+    ctx.fillText('新光人壽｜「再青春」下半場', W / 2, lineY + 46);
 
     // ── 8. 金色圓角外框 ────────────────────────
     const inset  = 18;
