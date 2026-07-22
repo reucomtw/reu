@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>新光人壽｜找到你的人生樣態</title>
+<title>新光人壽｜找到我的人生下半場</title>
 <style>
   /* =============================================
      🎨 品牌色彩設定（可修改）
@@ -752,8 +752,6 @@
     display: block;
   }
   /* 🖼️ Banner 圖片設定區（換成你的圖片網址）*/
-  .banner-desktop { display: block; }
-  .banner-mobile  { display: none; }
 
   /* Logo 區塊 */
   .logo-bar {
@@ -778,8 +776,6 @@
      RWD — 手機（< 480px）
      ============================================= */
   @media (max-width: 480px) {
-    .banner-desktop { display: none; }
-    .banner-mobile  { display: block; }
     .banner-wrap    { max-height: 200px; }
 
     .postcard { aspect-ratio: 1.2 / 1; }
@@ -848,35 +844,32 @@
 <!-- Banner -->
 <div class="banner-wrap" id="bannerWrap">
   <!-- 🖼️ 圖片好了放進 images/banner/ 資料夾即自動顯示 -->
-  <img class="banner-desktop"
-       src="/reu/images/banner/banner_desktop.jpg"
-       alt=""
-       onerror="document.getElementById('bannerWrap').style.display='none'">
-  <img class="banner-mobile"
-       src="/reu/images/banner/banner_mobile.jpg"
-       alt=""
-       onerror="this.style.display='none'">
+  <picture>
+    <source media="(max-width: 480px)"
+            srcset="/reu/images/banner/banner_mobile.jpg">
+    <img src="/reu/images/banner/banner_desktop.jpg"
+         alt=""
+         style="width:100%;height:100%;object-fit:cover;display:block"
+         onerror="document.getElementById('bannerWrap').style.display='none'">
+  </picture>
 </div>
 
 <div class="app">
   <!-- Logo 欄：圖片好了放進 images/logos/ 即自動顯示 -->
   <div class="logo-bar" id="logoBar">
-    <img src="/reu/images/logos/logo_reU.png" alt="彤鳥社會企業"
-         onerror="this.style.display='none';checkLogoBar()">
-    <div class="logo-divider" id="logoDivider"></div>
     <img src="/reu/images/logos/logo_shinkon.png" alt="新光人壽"
-         onerror="this.style.display='none';checkLogoBar()">
+         onerror="document.getElementById('logoBar').style.display='none'">
   </div>
 
   <!-- 品牌欄 -->
   <div class="brand-bar">
-    <span>新光人壽</span>｜高齡生活展
+    <span>新光人壽</span>｜「再青春」下半場
   </div>
 
   <!-- 進度條（問卷期間顯示） -->
   <div class="progress-wrap" id="progressWrap" style="display:none">
     <div class="progress-info">
-      <span id="progressLabel">第 1 題，共 12 題</span>
+      <span id="progressLabel">第 1 題，共 17 題</span>
       <strong id="progressPct">8%</strong>
     </div>
     <div class="progress-track">
@@ -887,9 +880,9 @@
   <!-- ===== 封面畫面 ===== -->
   <div class="screen active" id="screen-cover">
     <div class="cover-hero">
-      <div class="cover-badge">✦ 2分鐘找到你的人生樣態 ✦</div>
-      <h1 class="cover-title">辛苦一輩子<br>下半場，該怎麼活？</h1>
-      <p class="cover-subtitle">12個問題，揭開屬於你的<br>退休人生樣態與保障盲點</p>
+      <div class="cover-badge">✦ 1分鐘找到你的人生樣態 ✦</div>
+      <h1 class="cover-title">過去的人生很精采<br>下半輩子如何再青春</h1>
+      <p class="cover-subtitle">17個問題，揭開屬於您的<br>人生樣態與保障盲點</p>
       <!-- 🖼️ 封面插圖：圖片好了之後把 src 換掉，emoji 會自動隱藏 -->
       <div class="cover-illustration" id="coverIllustration">
         <img id="coverIllustrationImg"
@@ -901,9 +894,9 @@
       </div>
     </div>
     <div class="cover-meta">
-      <div class="cover-meta-item"><span class="icon">⏱️</span> 約 2 分鐘完成</div>
+      <div class="cover-meta-item"><span class="icon">⏱️</span> 約 1 分鐘完成</div>
       <div class="cover-meta-item"><span class="icon">🎭</span> 6 種人生樣態，看看你是哪一型</div>
-      <div class="cover-meta-item"><span class="icon">💌</span> 完成後獲得專屬明信片，寄到你的信箱</div>
+      <div class="cover-meta-item"><span class="icon">💌</span> 完成後獲得專屬明信片，寄到您的信箱</div>
       <div class="cover-meta-item"><span class="icon">🔒</span> 資料僅用於寄送明信片，不作其他用途</div>
     </div>
     <button class="btn-primary" onclick="startQuiz()">開始探索我的樣態 →</button>
@@ -924,7 +917,7 @@
   <div class="screen" id="screen-result">
     <div class="result-header">
       <div class="result-crown">🏆</div>
-      <div class="result-label">你的人生樣態是</div>
+      <div class="result-label">您的人生樣態是</div>
       <div class="result-name" id="resultName"></div>
       <div class="result-emoji" id="resultEmoji"></div>
     </div>
@@ -936,7 +929,7 @@
     <!-- 金句輸入 -->
     <div class="motto-section">
       <h3>💬 寫一句話給未來的自己</h3>
-      <p class="motto-hint">這句話會出現在你的專屬明信片上</p>
+      <p class="motto-hint">這句話會出現在您的專屬明信片上</p>
       <p class="motto-example" id="mottoExample"></p>
       <textarea
         class="motto-input"
@@ -950,7 +943,7 @@
 
     <!-- Email 輸入 -->
     <div class="email-section">
-      <h3>📬 填入信箱，接收你的明信片</h3>
+      <h3>📬 填入信箱，接收您的明信片</h3>
       <p class="email-note">明信片將寄到以下信箱，請確認正確</p>
       <input
         type="email"
@@ -968,8 +961,8 @@
   <!-- ===== 明信片預覽 ===== -->
   <div class="screen" id="screen-postcard">
     <div class="postcard-intro">
-      <h2>✨ 你的專屬明信片</h2>
-      <p>這是屬於你的人生宣言</p>
+      <h2>✨ 您的專屬明信片</h2>
+      <p>這是屬於您的人生宣言</p>
     </div>
 
     <!-- 明信片 -->
@@ -989,7 +982,7 @@
           <div class="postcard-divider"></div>
           <div class="postcard-name-line" id="postcardNameLine"></div>
         </div>
-        <div class="postcard-bottom-brand">新光人壽｜高齡生活展</div>
+        <div class="postcard-bottom-brand">新光人壽｜「再青春」下半場</div>
       </div>
     </div>
 
@@ -1012,7 +1005,7 @@
       </div>
       <h2 class="success-title">明信片已寄出！</h2>
       <p class="success-text">
-        你的專屬明信片正在飛往你的信箱<br>
+        您的專屬明信片正在飛往您的信箱<br>
         記得檢查收件匣（或垃圾郵件匣）
       </p>
       <div class="success-tip">
