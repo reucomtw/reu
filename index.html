@@ -573,32 +573,9 @@
     display: block;
   }
 
-  /* 角色圖：右上角小圖示 */
-  .postcard-char-badge {
-    position: absolute;
-    top: 16px;
-    right: 16px;
-    width: clamp(56px, 14vw, 80px);
-    height: clamp(56px, 14vw, 80px);
-    border-radius: 50%;
-    object-fit: cover;
-    border: 3px solid rgba(255,255,255,0.9);
-    box-shadow: 0 2px 12px rgba(0,0,0,0.25);
-  }
-  .postcard-char-badge-emoji {
-    position: absolute;
-    top: 16px;
-    right: 16px;
-    width: clamp(56px, 14vw, 80px);
-    height: clamp(56px, 14vw, 80px);
-    border-radius: 50%;
-    background: rgba(255,255,255,0.85);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: clamp(28px, 7vw, 40px);
-    box-shadow: 0 2px 12px rgba(0,0,0,0.2);
-  }
+  /* 角色圖：右上角小圖示（已停用）*/
+  .postcard-char-badge        { display: none; }
+  .postcard-char-badge-emoji  { display: none; }
 
   /* 下方緞帶區 */
   .postcard-ribbon {
@@ -814,8 +791,8 @@
   <!-- 🖼️ 圖片好了放進 images/banner/ 資料夾即自動顯示 -->
   <picture>
     <source media="(max-width: 480px)"
-            srcset="/reu/images/banner/banner_mobile.jpg">
-    <img src="/reu/images/banner/banner_desktop.jpg"
+            srcset="/images/banner/banner_mobile.jpg">
+    <img src="/images/banner/banner_desktop.jpg"
          alt=""
          style="width:100%;height:100%;object-fit:cover;display:block"
          onerror="document.getElementById('bannerWrap').style.display='none'">
@@ -825,7 +802,7 @@
 <div class="app">
   <!-- Logo 欄：圖片好了放進 images/logos/ 即自動顯示 -->
   <div class="logo-bar" id="logoBar">
-    <img src="/reu/images/logos/logo_shinkon.png" alt="新光人壽"
+    <img src="/images/logos/logo_shinkon.png" alt="新光人壽"
          onerror="document.getElementById('logoBar').style.display='none'">
   </div>
 
@@ -854,7 +831,7 @@
       <!-- 🖼️ 封面插圖：圖片好了之後把 src 換掉，emoji 會自動隱藏 -->
       <div class="cover-illustration" id="coverIllustration">
         <img id="coverIllustrationImg"
-             src="/reu/images/ui/cover_illustration.png"
+             src="/images/ui/cover_illustration.png"
              alt=""
              style="width:100%;height:100%;object-fit:contain;border-radius:50%"
              onerror="this.style.display='none';document.getElementById('coverEmoji').style.display='block'">
@@ -947,12 +924,22 @@
       <div class="postcard-ribbon">
         <div class="postcard-ribbon-role" id="postcardRoleName"></div>
         <div class="postcard-ribbon-motto" id="postcardMotto"></div>
+        <div style="width:40px;height:2px;background:var(--gold);margin:8px auto;"></div>
         <div class="postcard-ribbon-brand">新光人壽｜「再青春」下半場</div>
       </div>
     </div>
 
     <div class="submit-row">
-      <button class="btn-primary" onclick="sendEmail()">📨 寄到我的信箱</button>
+      <button class="btn-primary" onclick="sendEmail()">寄到我的信箱</button>
+    </div>
+    <div style="text-align:center;margin-top:12px;">
+      <button onclick="downloadPostcard()"
+              style="background:none;border:2px solid var(--gold);color:var(--gold);
+                     padding:12px 28px;border-radius:10px;font-size:15px;
+                     font-family:inherit;font-weight:700;cursor:pointer;
+                     letter-spacing:0.05em;transition:all 0.2s;">
+        下載明信片圖片
+      </button>
     </div>
     <div style="text-align:center;margin-top:12px;font-size:13px;color:var(--text-light)">
       寄送至：<span id="emailDisplay"></span>
@@ -963,7 +950,7 @@
   <div class="screen" id="screen-success">
     <div class="success-screen">
       <div class="success-icon">
-        <img src="/reu/images/ui/success_illustration.png"
+        <img src="/images/ui/success_illustration.png"
              alt="" style="width:80px;height:80px;object-fit:contain"
              onerror="this.style.display='none';document.getElementById('successEmoji').style.display='block'">
         <span id="successEmoji" style="display:none;font-size:64px">💌</span>
@@ -1331,7 +1318,7 @@ const CHARACTERS = [
    ⚙️ Google Sheets 串接設定
    步驟：建立 Apps Script → 部署為 Web App → 貼上網址
    ============================================= */
-const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbzmi4tHfvJBL-CSbWCKZSk5tCsZaV5EtPNRg884kzeb835wyPiMZg3uA37bti6yQOY-zg/exec';
+const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbywlof9BnyyYdXJKaGd7f0EgHawC-pkt1It8koBUwv_WQa4WvZhBC_lKjCxFppi7p4PKQ/exec';
 // 👆 將 Google Apps Script 部署後的網址貼在這裡（設定說明文件有詳細步驟）
 
 /* =============================================
@@ -1516,7 +1503,7 @@ function updateMottoCount() {
 /* =============================================
    🖼️ 圖片根目錄設定（換成你的 GitHub Pages 網址）
    ============================================= */
-const IMG_BASE = '/reu/images';
+const IMG_BASE = '/images';
 
 function getCharacterImageUrl(char, genderAnswer) {
   // 根據 Q1 性別答案選擇對應圖片
@@ -1624,6 +1611,138 @@ async function sendEmail() {
 
   document.getElementById('sendingOverlay').classList.remove('active');
   showScreen('screen-success');
+}
+
+/* =============================================
+   下載明信片（Canvas 高解析度繪製）
+   ============================================= */
+async function downloadPostcard() {
+  const btn = event.target;
+  btn.textContent = '產生中…';
+  btn.disabled = true;
+
+  try {
+    const char   = selectedChar;
+    const motto  = userMotto;
+    const gender = answerTexts[0] || '';
+
+    // 輸出尺寸 1080×1440（3:4 直式）
+    const W = 1080, H = 1440;
+    const canvas = document.createElement('canvas');
+    canvas.width  = W;
+    canvas.height = H;
+    const ctx = canvas.getContext('2d');
+
+    // ── 1. 載入角色圖 ──────────────────────────
+    let suffix = 'neutral';
+    if (gender === '女性') suffix = 'female';
+    else if (gender === '男性') suffix = 'male';
+    const imgUrl = `https://event.reu.com.tw/images/characters/${char.id}_${suffix}.png`;
+
+    const charImg = await loadImage(imgUrl).catch(() => null);
+
+    // ── 2. 畫背景（角色圖 or 漸層色）──────────
+    if (charImg) {
+      // 等比例填滿，置中裁切
+      const scale = Math.max(W / charImg.width, H / charImg.height);
+      const dw = charImg.width  * scale;
+      const dh = charImg.height * scale;
+      const dx = (W - dw) / 2;
+      const dy = (H - dh) / 2;
+      ctx.drawImage(charImg, dx, dy, dw, dh);
+    } else {
+      // 圖片載入失敗時用角色漸層色當底
+      const grad = ctx.createLinearGradient(0, 0, W, H);
+      const colors = char.leftBg.match(/#[0-9A-Fa-f]{6}/g) || ['#C0392B','#922B21'];
+      grad.addColorStop(0, colors[0]);
+      grad.addColorStop(1, colors[1] || colors[0]);
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, W, H);
+    }
+
+    // ── 3. 半透明白色緞帶（下方 38%）─────────
+    const ribbonY = H * 0.62;
+    const ribbonH = H - ribbonY;
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.88)';
+    ctx.fillRect(0, ribbonY, W, ribbonH);
+
+    // ── 4. 角色名稱 ────────────────────────────
+    const roleY = ribbonY + 60;
+    ctx.font = 'bold 38px serif';
+    ctx.fillStyle = '#C0392B';
+    ctx.textAlign = 'center';
+    ctx.fillText(`◆ ${char.name}`, W / 2, roleY);
+
+    // ── 5. 金句文字（自動換行）─────────────────
+    ctx.font = 'bold 58px serif';
+    ctx.fillStyle = '#2C1810';
+    const mottoText = `「${motto}」`;
+    const maxWidth  = W - 120;
+    const lineHeight = 80;
+    const mottoY = roleY + 70;
+    wrapText(ctx, mottoText, W / 2, mottoY, maxWidth, lineHeight);
+
+    // ── 6. 金色分隔線 ──────────────────────────
+    const lineY = mottoY + lineHeight * Math.ceil(mottoText.length / 14) + 30;
+    ctx.strokeStyle = '#D4A017';
+    ctx.lineWidth   = 4;
+    ctx.beginPath();
+    ctx.moveTo(W / 2 - 60, lineY);
+    ctx.lineTo(W / 2 + 60, lineY);
+    ctx.stroke();
+
+    // ── 7. 品牌文字 ────────────────────────────
+    ctx.font = '30px serif';
+    ctx.fillStyle = '#A0826D';
+    ctx.fillText('新光人壽｜「再青春」下半場', W / 2, lineY + 50);
+
+    // ── 8. 金色外框 ────────────────────────────
+    ctx.strokeStyle = 'rgba(212,160,23,0.6)';
+    ctx.lineWidth   = 6;
+    ctx.strokeRect(18, 18, W - 36, H - 36);
+
+    // ── 9. 下載 ────────────────────────────────
+    const link = document.createElement('a');
+    link.download = `再青春明信片_${char.name}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+
+  } catch (err) {
+    console.error('下載失敗：', err);
+    alert('下載失敗，請稍後再試');
+  } finally {
+    btn.textContent = '下載明信片圖片';
+    btn.disabled = false;
+  }
+}
+
+// 載入圖片（Promise）
+function loadImage(url) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload  = () => resolve(img);
+    img.onerror = () => reject(new Error('圖片載入失敗：' + url));
+    img.src = url;
+  });
+}
+
+// Canvas 自動換行
+function wrapText(ctx, text, x, y, maxWidth, lineH) {
+  const chars = text.split('');
+  let line = '';
+  let lineY = y;
+  for (let i = 0; i < chars.length; i++) {
+    const test = line + chars[i];
+    if (ctx.measureText(test).width > maxWidth && line !== '') {
+      ctx.fillText(line, x, lineY);
+      line  = chars[i];
+      lineY += lineH;
+    } else {
+      line = test;
+    }
+  }
+  if (line) ctx.fillText(line, x, lineY);
 }
 
 /* =============================================
