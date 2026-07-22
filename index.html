@@ -556,111 +556,79 @@
     position: relative;
     border-radius: 20px;
     overflow: hidden;
-    box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.2);
     margin: 0 auto 28px;
     max-width: 540px;
-    aspect-ratio: 1.5 / 1;
+    aspect-ratio: 3 / 4;   /* 直式，像真明信片 */
     background: var(--warm-gray);
   }
 
-  /* 左半：圖像區 */
-  .postcard-left {
+  /* 全幅底圖 */
+  .postcard-bg {
     position: absolute;
-    left: 0; top: 0;
-    width: 48%;
+    inset: 0;
+    width: 100%;
     height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-  }
-  .postcard-avatar {
-    font-size: clamp(50px, 10vw, 70px);
-    margin-bottom: 8px;
-    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.15));
-  }
-  .postcard-char-img {
-    width: clamp(80px, 16vw, 110px);
-    height: clamp(80px, 16vw, 110px);
     object-fit: cover;
-    border-radius: 50%;
-    border: 3px solid var(--white);
-    margin-bottom: 8px;
-  }
-  .postcard-role-name {
-    font-size: clamp(11px, 2.5vw, 14px);
-    font-weight: 700;
-    color: var(--white);
-    text-align: center;
-    letter-spacing: 0.05em;
-    text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+    display: block;
   }
 
-  /* 右半：文字區 */
-  .postcard-right {
+  /* 角色圖：右上角小圖示 */
+  .postcard-char-badge {
     position: absolute;
-    right: 0; top: 0;
-    width: 52%;
-    height: 100%;
-    background: var(--white);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 16px 18px;
+    top: 16px;
+    right: 16px;
+    width: clamp(56px, 14vw, 80px);
+    height: clamp(56px, 14vw, 80px);
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid rgba(255,255,255,0.9);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.25);
   }
-  .postcard-stamp-area {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 8px;
-  }
-  .postcard-stamp {
-    width: 36px;
-    height: 44px;
-    border: 2px solid var(--gold);
-    border-radius: 3px;
+  .postcard-char-badge-emoji {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: clamp(56px, 14vw, 80px);
+    height: clamp(56px, 14vw, 80px);
+    border-radius: 50%;
+    background: rgba(255,255,255,0.85);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 18px;
-    background: var(--cream);
+    font-size: clamp(28px, 7vw, 40px);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.2);
   }
-  .postcard-lines {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 4px;
+
+  /* 下方緞帶區 */
+  .postcard-ribbon {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    padding: 18px 20px 20px;
+    text-align: center;
   }
-  .postcard-motto-label {
-    font-size: clamp(9px, 2vw, 11px);
-    color: var(--text-light);
-    letter-spacing: 0.1em;
-    margin-bottom: 4px;
-  }
-  .postcard-motto-text {
-    font-size: clamp(12px, 2.8vw, 16px);
+  .postcard-ribbon-role {
+    font-size: clamp(10px, 2.5vw, 13px);
+    color: var(--red);
     font-weight: 700;
-    color: var(--red-dark);
-    line-height: 1.4;
+    letter-spacing: 0.12em;
+    margin-bottom: 6px;
+  }
+  .postcard-ribbon-motto {
+    font-size: clamp(15px, 4vw, 22px);
+    font-weight: 700;
+    color: var(--text-dark);
+    line-height: 1.5;
     word-break: break-all;
+    margin-bottom: 8px;
   }
-  .postcard-divider {
-    width: 40px;
-    height: 2px;
-    background: var(--gold);
-    margin: 8px 0;
-  }
-  .postcard-name-line {
+  .postcard-ribbon-brand {
     font-size: clamp(9px, 2vw, 11px);
     color: var(--text-light);
-    letter-spacing: 0.05em;
-  }
-  .postcard-bottom-brand {
-    font-size: clamp(8px, 1.8vw, 10px);
-    color: var(--text-light);
     letter-spacing: 0.1em;
-    text-align: right;
   }
 
   /* 金邊框 */
@@ -668,7 +636,7 @@
     content: '';
     position: absolute;
     inset: 6px;
-    border: 2px solid rgba(212,160,23,0.4);
+    border: 1.5px solid rgba(212,160,23,0.5);
     border-radius: 15px;
     pointer-events: none;
   }
@@ -778,7 +746,7 @@
   @media (max-width: 480px) {
     .banner-wrap    { max-height: 200px; }
 
-    .postcard { aspect-ratio: 1.2 / 1; }
+    .postcard { aspect-ratio: 3 / 4; max-width: 360px; }
 
     .cover-title    { font-size: 24px; }
     .cover-subtitle { font-size: 14px; }
@@ -803,7 +771,7 @@
     .app            { max-width: 720px; padding: 0 24px 60px; }
     .banner-wrap    { max-height: 260px; }
 
-    .postcard       { max-width: 600px; aspect-ratio: 1.5 / 1; }
+    .postcard       { max-width: 400px; aspect-ratio: 3 / 4; }
 
     .cover-title    { font-size: 32px; }
     .option-btn     { font-size: 15px; padding: 16px 18px; }
@@ -820,7 +788,7 @@
     .app            { max-width: 760px; padding: 0 32px 80px; }
     .banner-wrap    { max-height: 300px; border-radius: 0 0 16px 16px; }
 
-    .postcard       { max-width: 600px; }
+    .postcard       { max-width: 420px; }
 
     .cover-hero     { padding: 48px 0 36px; }
     .cover-illustration { width: 220px; height: 220px; font-size: 90px; }
@@ -967,22 +935,19 @@
 
     <!-- 明信片 -->
     <div class="postcard" id="postcardEl">
-      <div class="postcard-left" id="postcardLeft">
-        <img class="postcard-char-img" id="postcardImg" src="" alt="" onerror="this.style.display='none';document.getElementById('postcardEmoji').style.display='block'">
-        <div class="postcard-avatar" id="postcardEmoji" style="display:none"></div>
-        <div class="postcard-role-name" id="postcardRoleName"></div>
-      </div>
-      <div class="postcard-right">
-        <div class="postcard-stamp-area">
-          <div class="postcard-stamp">🔖</div>
-        </div>
-        <div class="postcard-lines">
-          <div class="postcard-motto-label">我的人生金句</div>
-          <div class="postcard-motto-text" id="postcardMotto"></div>
-          <div class="postcard-divider"></div>
-          <div class="postcard-name-line" id="postcardNameLine"></div>
-        </div>
-        <div class="postcard-bottom-brand">新光人壽｜「再青春」下半場</div>
+      <!-- 底圖：角色場景圖 -->
+      <img class="postcard-bg" id="postcardBg" src="" alt="">
+
+      <!-- 右上角角色徽章 -->
+      <img class="postcard-char-badge" id="postcardImg" src="" alt=""
+           onerror="this.style.display='none';document.getElementById('postcardEmoji').style.display='flex'">
+      <div class="postcard-char-badge-emoji" id="postcardEmoji" style="display:none"></div>
+
+      <!-- 下方緞帶 -->
+      <div class="postcard-ribbon">
+        <div class="postcard-ribbon-role" id="postcardRoleName"></div>
+        <div class="postcard-ribbon-motto" id="postcardMotto"></div>
+        <div class="postcard-ribbon-brand">新光人壽｜「再青春」下半場</div>
       </div>
     </div>
 
@@ -1583,28 +1548,36 @@ function generatePostcard() {
   userMotto = motto;
   userEmail = email;
 
-  // 填入明信片
   const char = selectedChar;
-  document.getElementById('postcardMotto').textContent = motto;
-  document.getElementById('postcardRoleName').textContent = char.name + ' ' + char.emoji;
-  document.getElementById('postcardNameLine').textContent = char.name;
-  document.getElementById('emailDisplay').textContent = email;
-  document.getElementById('postcardEmoji').textContent = char.emoji;
-
-  // 設定左側背景
-  document.getElementById('postcardLeft').style.background = char.leftBg;
-
-  // 設定角色圖片（依性別自動對應）
-  const img = document.getElementById('postcardImg');
   const genderAnswer = answerTexts[0] || '';
-  const imgUrl = getCharacterImageUrl(char, genderAnswer);
-  img.src = imgUrl;
-  img.style.display = 'block';
-  document.getElementById('postcardEmoji').style.display = 'none';
-  // 圖片載入失敗時顯示 emoji
-  img.onerror = function() {
+
+  // 填入緞帶文字
+  document.getElementById('postcardMotto').textContent    = motto;
+  document.getElementById('postcardRoleName').textContent = `${char.emoji} ${char.name}`;
+  document.getElementById('emailDisplay').textContent     = email;
+
+  // 底圖：角色場景背景圖
+  const bgImg = document.getElementById('postcardBg');
+  bgImg.src = `${IMG_BASE}/backgrounds/bg_${char.id}.png`;
+  bgImg.onerror = function() {
+    this.style.background = char.leftBg;
     this.style.display = 'none';
-    document.getElementById('postcardEmoji').style.display = 'block';
+    document.getElementById('postcardEl').style.background = char.leftBg;
+  };
+
+  // 右上角角色徽章（依性別）
+  const charImg = document.getElementById('postcardImg');
+  let suffix = 'neutral';
+  if (genderAnswer === '女性') suffix = 'female';
+  else if (genderAnswer === '男性') suffix = 'male';
+  charImg.src = `${IMG_BASE}/characters/${char.id}_${suffix}.png`;
+  charImg.style.display = 'block';
+  document.getElementById('postcardEmoji').style.display = 'none';
+  charImg.onerror = function() {
+    this.style.display = 'none';
+    const emojiEl = document.getElementById('postcardEmoji');
+    emojiEl.style.display = 'flex';
+    emojiEl.textContent = char.emoji;
   };
 
   showScreen('screen-postcard');
