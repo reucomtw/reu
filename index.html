@@ -1672,7 +1672,10 @@ async function sendEmail() {
     // 品牌
     ctx.font = `${BRAND_FS}px serif`;
     ctx.fillStyle = '#A0826D';
-    ctx.fillText('新光人壽｜「再青春」下半場', W / 2, lineY + DIV_MB / 2 + BRAND_FS);
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('新光人壽｜「再青春」下半場', W / 2, lineY + DIV_MB / 2 + BRAND_FS / 2);
+    ctx.textBaseline = 'alphabetic';
 
     // 金色外框
     const inset = 18, fR = radius - inset;
@@ -1838,7 +1841,10 @@ async function downloadPostcard() {
     // ── 7. 品牌文字 ────────────────────────────
     ctx.font = `${BRAND_FS}px serif`;
     ctx.fillStyle = '#A0826D';
-    ctx.fillText('新光人壽｜「再青春」下半場', W / 2, lineY + DIV_MB / 2 + BRAND_FS);
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('新光人壽｜「再青春」下半場', W / 2, lineY + DIV_MB / 2 + BRAND_FS / 2);
+    ctx.textBaseline = 'alphabetic'; // 重置回預設
 
     // ── 8. 金色圓角外框 ────────────────────────
     const inset  = 18;
