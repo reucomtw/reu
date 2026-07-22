@@ -558,8 +558,8 @@
     overflow: hidden;
     box-shadow: 0 12px 40px rgba(0,0,0,0.2);
     margin: 0 auto 28px;
-    max-width: 540px;
-    aspect-ratio: 3 / 4;   /* 直式，像真明信片 */
+    max-width: 480px;
+    aspect-ratio: 3 / 5;   /* 더 길게 — 이미지가 더 많이 보임 */
     background: var(--warm-gray);
   }
 
@@ -570,6 +570,7 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: center top;
     display: block;
   }
 
@@ -577,33 +578,33 @@
   .postcard-char-badge        { display: none; }
   .postcard-char-badge-emoji  { display: none; }
 
-  /* 下方緞帶區 */
+  /* 下方緞帶區 — 縮小，只佔圖片下方一小條 */
   .postcard-ribbon {
     position: absolute;
     bottom: 0; left: 0; right: 0;
-    background: rgba(255, 255, 255, 0.82);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    padding: 18px 20px 20px;
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    padding: 12px 16px 16px;
     text-align: center;
   }
   .postcard-ribbon-role {
-    font-size: clamp(10px, 2.5vw, 13px);
+    font-size: clamp(9px, 2.2vw, 12px);
     color: var(--red);
     font-weight: 700;
     letter-spacing: 0.12em;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
   }
   .postcard-ribbon-motto {
-    font-size: clamp(15px, 4vw, 22px);
+    font-size: clamp(13px, 3.5vw, 19px);
     font-weight: 700;
     color: var(--text-dark);
-    line-height: 1.5;
+    line-height: 1.4;
     word-break: break-all;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
   }
   .postcard-ribbon-brand {
-    font-size: clamp(9px, 2vw, 11px);
+    font-size: clamp(8px, 1.8vw, 10px);
     color: var(--text-light);
     letter-spacing: 0.1em;
   }
@@ -723,7 +724,7 @@
   @media (max-width: 480px) {
     .banner-wrap    { max-height: 200px; }
 
-    .postcard { aspect-ratio: 3 / 4; max-width: 360px; }
+    .postcard { aspect-ratio: 3 / 5; max-width: 360px; }
 
     .cover-title    { font-size: 24px; }
     .cover-subtitle { font-size: 14px; }
@@ -748,7 +749,7 @@
     .app            { max-width: 720px; padding: 0 24px 60px; }
     .banner-wrap    { max-height: 260px; }
 
-    .postcard       { max-width: 400px; aspect-ratio: 3 / 4; }
+    .postcard       { max-width: 400px; aspect-ratio: 3 / 5; }
 
     .cover-title    { font-size: 32px; }
     .option-btn     { font-size: 15px; padding: 16px 18px; }
