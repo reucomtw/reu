@@ -1642,6 +1642,20 @@ async function downloadPostcard() {
     const charImg = await loadImage(imgUrl).catch(() => null);
 
     // ── 2. 畫背景（角色圖 or 漸層色）──────────
+    // 先建立圓角裁切路徑
+    const radius = 60;
+    ctx.beginPath();
+    ctx.moveTo(radius, 0);
+    ctx.lineTo(W - radius, 0);
+    ctx.quadraticCurveTo(W, 0, W, radius);
+    ctx.lineTo(W, H - radius);
+    ctx.quadraticCurveTo(W, H, W - radius, H);
+    ctx.lineTo(radius, H);
+    ctx.quadraticCurveTo(0, H, 0, H - radius);
+    ctx.lineTo(0, radius);
+    ctx.quadraticCurveTo(0, 0, radius, 0);
+    ctx.closePath();
+    ctx.clip(); // 之後所有繪製都在圓角內
     if (charImg) {
       // 等比例填滿，置中裁切
       const scale = Math.max(W / charImg.width, H / charImg.height);
