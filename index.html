@@ -1636,12 +1636,17 @@ async function sendEmail() {
     const PAD_BOT  = 40;
     const ROLE_MB  = 10;
     const MOTTO_MB = 15;
-    const DIV_MB   = 20;
+
+    // 分隔線尺寸（對應 HTML width:40px; height:2px; margin:8px auto）
+    const scaleRatio   = W / 480;
+    const dividerW     = Math.round(40 * scaleRatio);
+    const dividerH     = Math.round(2  * scaleRatio);
+    const dividerMargin = Math.round(8  * scaleRatio);
 
     ctx.font = `bold ${MOTTO_FS}px serif`;
     const maxWidth  = W - 80;
     const tempLines = Math.ceil(ctx.measureText(userMotto).width / maxWidth) || 1;
-    const ribbonH2  = PAD_TOP + ROLE_FS + ROLE_MB + (MOTTO_LH * tempLines) + MOTTO_MB + 5 + DIV_MB + BRAND_FS + PAD_BOT;
+    const ribbonH2  = PAD_TOP + ROLE_FS + ROLE_MB + (MOTTO_LH * tempLines) + MOTTO_MB + dividerMargin + dividerH + dividerMargin + BRAND_FS + PAD_BOT;
     const ribbonY   = H - ribbonH2;
 
     ctx.fillStyle = 'rgba(255, 255, 255, 0.88)';
@@ -1660,23 +1665,20 @@ async function sendEmail() {
     const mottoY     = roleY + ROLE_MB + MOTTO_FS;
     const mottoLines = wrapText(ctx, userMotto, W / 2, mottoY, maxWidth, MOTTO_LH);
 
-    // 金色分隔線（最後一行金句底部 + MOTTO_MB）
+    // 金色分隔線（fillRect，對應 HTML div）
     const lastMottoBottom = mottoY + MOTTO_LH * (mottoLines - 1) + MOTTO_MB;
-    const lineY = Math.round(lastMottoBottom + DIV_MB / 2);
-    const cx    = Math.round(W / 2);
-    ctx.strokeStyle = '#D4A017';
-    ctx.lineWidth   = 5;
-    ctx.beginPath();
-    ctx.moveTo(cx - 50, lineY);
-    ctx.lineTo(cx + 50, lineY);
-    ctx.stroke();
+    const divLineY = Math.round(lastMottoBottom + dividerMargin);
+    const divLineX = Math.round((W - dividerW) / 2);
+    ctx.fillStyle = '#D4A017';
+    ctx.fillRect(divLineX, divLineY, dividerW, dividerH);
 
-    // 品牌
+    // 品牌文字
+    const brandY = divLineY + dividerH + dividerMargin + BRAND_FS / 2;
     ctx.font = `${BRAND_FS}px serif`;
     ctx.fillStyle = '#A0826D';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('新光人壽｜「再青春」下半場', W / 2, lineY + DIV_MB / 2 + BRAND_FS / 2);
+    ctx.fillText('新光人壽｜「再青春」下半場', W / 2, brandY);
     ctx.textBaseline = 'alphabetic';
 
     // 金色外框
@@ -1799,20 +1801,25 @@ async function downloadPostcard() {
     }
 
     // ── 3. 緞帶（動態高度，完全對應網頁版 CSS 比例）─────────
-    const ROLE_FS  = 23;   // clamp(9px,2.2vw,12px) × 2.512
-    const MOTTO_FS = 38;   // clamp(13px,3.5vw,19px) × 2.512
-    const MOTTO_LH = 53;   // motto_fs × 1.4
-    const BRAND_FS = 20;   // clamp(8px,1.8vw,10px) × 2.512
-    const PAD_TOP  = 30;   // 12px × 2.512
-    const PAD_BOT  = 40;   // 16px × 2.512
-    const ROLE_MB  = 10;   // 4px × 2.512
-    const MOTTO_MB = 15;   // 6px × 2.512
-    const DIV_MB   = 20;   // 8px × 2.512
+    const ROLE_FS  = 23;
+    const MOTTO_FS = 38;
+    const MOTTO_LH = 53;
+    const BRAND_FS = 20;
+    const PAD_TOP  = 30;
+    const PAD_BOT  = 40;
+    const ROLE_MB  = 10;
+    const MOTTO_MB = 15;
+
+    // 分隔線尺寸（對應 HTML width:40px; height:2px; margin:8px auto）
+    const scaleRatio    = W / 480;
+    const dividerW      = Math.round(40 * scaleRatio);
+    const dividerH      = Math.round(2  * scaleRatio);
+    const dividerMargin = Math.round(8  * scaleRatio);
 
     ctx.font = `bold ${MOTTO_FS}px serif`;
     const maxWidth  = W - 80;
     const tempLines = Math.ceil(ctx.measureText(motto).width / maxWidth) || 1;
-    const ribbonH   = PAD_TOP + ROLE_FS + ROLE_MB + (MOTTO_LH * tempLines) + MOTTO_MB + 5 + DIV_MB + BRAND_FS + PAD_BOT;
+    const ribbonH   = PAD_TOP + ROLE_FS + ROLE_MB + (MOTTO_LH * tempLines) + MOTTO_MB + dividerMargin + dividerH + dividerMargin + BRAND_FS + PAD_BOT;
     const ribbonY   = H - ribbonH;
 
     ctx.fillStyle = 'rgba(255, 255, 255, 0.88)';
@@ -1831,23 +1838,20 @@ async function downloadPostcard() {
     const mottoY     = roleY + ROLE_MB + MOTTO_FS;
     const mottoLines = wrapText(ctx, motto, W / 2, mottoY, maxWidth, MOTTO_LH);
 
-    // ── 6. 金色分隔線 ──────────────────────────
+    // ── 6. 金色分隔線（fillRect，精確對應 HTML div）──────────
     const lastMottoBottom2 = mottoY + MOTTO_LH * (mottoLines - 1) + MOTTO_MB;
-    const lineY = Math.round(lastMottoBottom2 + DIV_MB / 2);
-    const cx2   = Math.round(W / 2);
-    ctx.strokeStyle = '#D4A017';
-    ctx.lineWidth   = 5;
-    ctx.beginPath();
-    ctx.moveTo(cx2 - 50, lineY);
-    ctx.lineTo(cx2 + 50, lineY);
-    ctx.stroke();
+    const divLineY = Math.round(lastMottoBottom2 + dividerMargin);
+    const divLineX = Math.round((W - dividerW) / 2);
+    ctx.fillStyle = '#D4A017';
+    ctx.fillRect(divLineX, divLineY, dividerW, dividerH);
 
     // ── 7. 品牌文字 ────────────────────────────
+    const brandY = divLineY + dividerH + dividerMargin + BRAND_FS / 2;
     ctx.font = `${BRAND_FS}px serif`;
     ctx.fillStyle = '#A0826D';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('新光人壽｜「再青春」下半場', W / 2, lineY + DIV_MB / 2 + BRAND_FS / 2);
+    ctx.fillText('新光人壽｜「再青春」下半場', W / 2, brandY);
     ctx.textBaseline = 'alphabetic';
 
     // ── 8. 金色圓角外框 ────────────────────────
