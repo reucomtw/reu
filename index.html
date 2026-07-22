@@ -1556,29 +1556,22 @@ function generatePostcard() {
   document.getElementById('postcardRoleName').textContent = `${char.emoji} ${char.name}`;
   document.getElementById('emailDisplay').textContent     = email;
 
-  // 底圖：角色場景背景圖
+  // 性別對應後綴
+  let suffix = 'neutral';
+  if (genderAnswer === '女性') suffix = 'female';
+  else if (genderAnswer === '男性') suffix = 'male';
+
+  // 角色圖鋪滿當底圖
   const bgImg = document.getElementById('postcardBg');
-  bgImg.src = `${IMG_BASE}/backgrounds/bg_${char.id}.png`;
+  bgImg.src = `${IMG_BASE}/characters/${char.id}_${suffix}.png`;
   bgImg.onerror = function() {
-    this.style.background = char.leftBg;
     this.style.display = 'none';
     document.getElementById('postcardEl').style.background = char.leftBg;
   };
 
-  // 右上角角色徽章（依性別）
-  const charImg = document.getElementById('postcardImg');
-  let suffix = 'neutral';
-  if (genderAnswer === '女性') suffix = 'female';
-  else if (genderAnswer === '男性') suffix = 'male';
-  charImg.src = `${IMG_BASE}/characters/${char.id}_${suffix}.png`;
-  charImg.style.display = 'block';
+  // 隱藏右上角小圖（不再使用）
+  document.getElementById('postcardImg').style.display = 'none';
   document.getElementById('postcardEmoji').style.display = 'none';
-  charImg.onerror = function() {
-    this.style.display = 'none';
-    const emojiEl = document.getElementById('postcardEmoji');
-    emojiEl.style.display = 'flex';
-    emojiEl.textContent = char.emoji;
-  };
 
   showScreen('screen-postcard');
 }
