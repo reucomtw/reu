@@ -1569,45 +1569,150 @@ function generatePostcard() {
    ============================================= */
 async function sendEmail() {
   document.getElementById('sendingOverlay').classList.add('active');
+  document.getElementById('sending-text') && (document.getElementById('sending-text').textContent = '正在合成明信片…');
 
-  // 組裝每題答案（題目ID + 選項文字 + 分數）
+  // 組裝每題答案
   const questionDetails = QUESTIONS.map((q, i) => ({
-    qid:    q.id,
-    dim:    q.dim,
-    q:      q.text,
-    ans:    answerTexts[i] || '',
-    score:  answers[i]    || 0
+    qid:   q.id,
+    dim:   q.dim,
+    q:     q.text,
+    ans:   answerTexts[i] || '',
+    score: answers[i]     || 0
   }));
 
+  // ── 先用 Canvas 合成明信片圖片 ──────────────
+  let postcardBase64 = '';
+  try {
+    const char   = selectedChar;
+    const gender = answerTexts[0] || '';
+    let suffix = 'neutral';
+    if (gender === '女性') suffix = 'female';
+    else if (gender === '男性') suffix = 'male';
+
+    const W = 1055, H = 1491;
+    const canvas = document.createElement('canvas');
+    canvas.width  = W;
+    canvas.height = H;
+    const ctx = canvas.getContext('2d');
+
+    // 圓角裁切
+    const radius = 55;
+    ctx.beginPath();
+    ctx.moveTo(radius, 0);
+    ctx.lineTo(W - radius, 0);
+    ctx.quadraticCurveTo(W, 0, W, radius);
+    ctx.lineTo(W, H - radius);
+    ctx.quadraticCurveTo(W, H, W - radius, H);
+    ctx.lineTo(radius, H);
+    ctx.quadraticCurveTo(0, H, 0, H - radius);
+    ctx.lineTo(0, radius);
+    ctx.quadraticCurveTo(0, 0, radius, 0);
+    ctx.closePath();
+    ctx.clip();
+
+    // 角色圖
+    const imgUrl  = `https://event.reu.com.tw/images/characters/${char.id}_${suffix}.png`;
+    const charImg = await loadImage(imgUrl).catch(() => null);
+    if (charImg) {
+      const scale = Math.max(W / charImg.width, H / charImg.height);
+      const dw = charImg.width  * scale;
+      const dh = charImg.height * scale;
+      ctx.drawImage(charImg, (W - dw) / 2, (H - dh) / 2, dw, dh);
+    } else {
+      const grad = ctx.createLinearGradient(0, 0, W, H);
+      const colors = char.leftBg.match(/#[0-9A-Fa-f]{6}/g) || ['#C0392B','#922B21'];
+      grad.addColorStop(0, colors[0]);
+      grad.addColorStop(1, colors[1] || colors[0]);
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, W, H);
+    }
+
+    // 緞帶
+    const ribbonY = Math.round(H * 0.845);
+    ctx.fillStyle = 'rgba(255,255,255,0.88)';
+    ctx.fillRect(0, ribbonY, W, H - ribbonY);
+
+    // 角色名稱
+    const roleY = ribbonY + 44;
+    ctx.font = 'bold 28px serif';
+    ctx.fillStyle = '#C0392B';
+    ctx.textAlign = 'center';
+    ctx.fillText(`◆ ${char.name}`, W / 2, roleY);
+
+    // 金句
+    ctx.font = 'bold 46px serif';
+    ctx.fillStyle = '#2C1810';
+    const maxWidth   = W - 100;
+    const lineHeight = 64;
+    const mottoY     = roleY + 52;
+    wrapText(ctx, userMotto, W / 2, mottoY, maxWidth, lineHeight);
+
+    // 金色分隔線
+    const lineY = mottoY + lineHeight * Math.ceil(ctx.measureText(userMotto).width / maxWidth + 1) + 16;
+    ctx.strokeStyle = '#D4A017';
+    ctx.lineWidth   = 3;
+    ctx.beginPath();
+    ctx.moveTo(W / 2 - 48, lineY);
+    ctx.lineTo(W / 2 + 48, lineY);
+    ctx.stroke();
+
+    // 品牌
+    ctx.font = '24px serif';
+    ctx.fillStyle = '#A0826D';
+    ctx.fillText('新光人壽｜「再青春」下半場', W / 2, lineY + 38);
+
+    // 金色外框
+    const inset = 18, fR = radius - inset;
+    ctx.strokeStyle = 'rgba(212,160,23,0.6)';
+    ctx.lineWidth   = 6;
+    ctx.beginPath();
+    ctx.moveTo(inset + fR, inset);
+    ctx.lineTo(W - inset - fR, inset);
+    ctx.quadraticCurveTo(W - inset, inset, W - inset, inset + fR);
+    ctx.lineTo(W - inset, H - inset - fR);
+    ctx.quadraticCurveTo(W - inset, H - inset, W - inset - fR, H - inset);
+    ctx.lineTo(inset + fR, H - inset);
+    ctx.quadraticCurveTo(inset, H - inset, inset, H - inset - fR);
+    ctx.lineTo(inset, inset + fR);
+    ctx.quadraticCurveTo(inset, inset, inset + fR, inset);
+    ctx.closePath();
+    ctx.stroke();
+
+    // 取得 base64（去掉 data:image/png;base64, 前綴）
+    postcardBase64 = canvas.toDataURL('image/png').split(',')[1];
+
+  } catch (err) {
+    console.warn('圖片合成失敗，將以無附件方式寄送：', err);
+  }
+
   const payload = {
-    timestamp:    new Date().toISOString(),
-    email:        userEmail,
-    gender:       answerTexts[0] || '',   // 第一題為性別
-    character:    selectedChar.name,
-    emoji:        selectedChar.emoji,
-    motto:        userMotto,
-    familyScore:  familyScore,
-    claimsScore:  claimsScore,
-    financeScore: financeScore,
-    answers:      questionDetails   // 每題完整答案
+    timestamp:       new Date().toISOString(),
+    email:           userEmail,
+    gender:          answerTexts[0] || '',
+    character:       selectedChar.name,
+    emoji:           selectedChar.emoji,
+    motto:           userMotto,
+    familyScore:     familyScore,
+    claimsScore:     claimsScore,
+    financeScore:    financeScore,
+    answers:         questionDetails,
+    postcardBase64:  postcardBase64    // 合成好的明信片圖片
   };
 
   try {
     if (GOOGLE_SHEET_URL) {
       await fetch(GOOGLE_SHEET_URL, {
         method: 'POST',
-        mode:   'no-cors',          // Apps Script 需要 no-cors
+        mode:   'no-cors',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
     } else {
-      // 測試模式：尚未設定 Sheets URL，模擬延遲
       await new Promise(r => setTimeout(r, 1500));
       console.log('📊 測試模式資料：', payload);
     }
   } catch (e) {
     console.warn('資料傳送失敗：', e);
-    // 即使失敗也繼續，不影響展覽體驗
   }
 
   document.getElementById('sendingOverlay').classList.remove('active');
@@ -1675,41 +1780,41 @@ async function downloadPostcard() {
       ctx.fillRect(0, 0, W, H);
     }
 
-    // ── 3. 半透明白色緞帶（下方 32%）─────────
-    const ribbonY = H * 0.68;
+    // ── 3. 半透明白色緞帶（下方 15.5%，與網頁版比例一致）─────────
+    const ribbonY = Math.round(H * 0.845);
     const ribbonH = H - ribbonY;
     ctx.fillStyle = 'rgba(255, 255, 255, 0.88)';
     ctx.fillRect(0, ribbonY, W, ribbonH);
 
     // ── 4. 角色名稱 ────────────────────────────
-    const roleY = ribbonY + 55;
-    ctx.font = 'bold 34px serif';
+    const roleY = ribbonY + 44;
+    ctx.font = 'bold 28px serif';
     ctx.fillStyle = '#C0392B';
     ctx.textAlign = 'center';
     ctx.fillText(`◆ ${char.name}`, W / 2, roleY);
 
     // ── 5. 金句文字（自動換行）─────────────────
-    ctx.font = 'bold 52px serif';
+    ctx.font = 'bold 46px serif';
     ctx.fillStyle = '#2C1810';
-    const mottoText = `「${motto}」`;
-    const maxWidth  = W - 120;
-    const lineHeight = 74;
-    const mottoY = roleY + 65;
+    const mottoText = motto;  // 不加「」引號，與網頁版一致
+    const maxWidth  = W - 100;
+    const lineHeight = 64;
+    const mottoY = roleY + 52;
     wrapText(ctx, mottoText, W / 2, mottoY, maxWidth, lineHeight);
 
     // ── 6. 金色分隔線 ──────────────────────────
-    const lineY = mottoY + lineHeight * Math.ceil(mottoText.length / 15) + 24;
+    const lineY = mottoY + lineHeight * Math.ceil(ctx.measureText(mottoText).width / maxWidth + 1) + 16;
     ctx.strokeStyle = '#D4A017';
-    ctx.lineWidth   = 4;
+    ctx.lineWidth   = 3;
     ctx.beginPath();
-    ctx.moveTo(W / 2 - 55, lineY);
-    ctx.lineTo(W / 2 + 55, lineY);
+    ctx.moveTo(W / 2 - 48, lineY);
+    ctx.lineTo(W / 2 + 48, lineY);
     ctx.stroke();
 
     // ── 7. 品牌文字 ────────────────────────────
-    ctx.font = '28px serif';
+    ctx.font = '24px serif';
     ctx.fillStyle = '#A0826D';
-    ctx.fillText('新光人壽｜「再青春」下半場', W / 2, lineY + 46);
+    ctx.fillText('新光人壽｜「再青春」下半場', W / 2, lineY + 38);
 
     // ── 8. 金色圓角外框 ────────────────────────
     const inset  = 18;
