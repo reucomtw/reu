@@ -1627,39 +1627,52 @@ async function sendEmail() {
       ctx.fillRect(0, 0, W, H);
     }
 
-    // 緞帶
-    const ribbonY = Math.round(H * 0.845);
-    ctx.fillStyle = 'rgba(255,255,255,0.88)';
-    ctx.fillRect(0, ribbonY, W, H - ribbonY);
+    // 緞帶（完全對應網頁版 CSS 比例）
+    const ROLE_FS  = 23;
+    const MOTTO_FS = 38;
+    const MOTTO_LH = 53;
+    const BRAND_FS = 20;
+    const PAD_TOP  = 30;
+    const PAD_BOT  = 40;
+    const ROLE_MB  = 10;
+    const MOTTO_MB = 15;
+    const DIV_MB   = 20;
+
+    ctx.font = `bold ${MOTTO_FS}px serif`;
+    const maxWidth  = W - 80;
+    const tempLines = Math.ceil(ctx.measureText(userMotto).width / maxWidth) || 1;
+    const ribbonH2  = PAD_TOP + ROLE_FS + ROLE_MB + (MOTTO_LH * tempLines) + MOTTO_MB + 5 + DIV_MB + BRAND_FS + PAD_BOT;
+    const ribbonY   = H - ribbonH2;
+
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.88)';
+    ctx.fillRect(0, ribbonY, W, ribbonH2);
 
     // 角色名稱
-    const roleY = ribbonY + 44;
-    ctx.font = 'bold 28px serif';
+    const roleY = ribbonY + PAD_TOP + ROLE_FS;
+    ctx.font = `bold ${ROLE_FS}px serif`;
     ctx.fillStyle = '#C0392B';
     ctx.textAlign = 'center';
     ctx.fillText(`◆ ${char.name}`, W / 2, roleY);
 
     // 金句
-    ctx.font = 'bold 46px serif';
+    ctx.font = `bold ${MOTTO_FS}px serif`;
     ctx.fillStyle = '#2C1810';
-    const maxWidth   = W - 100;
-    const lineHeight = 64;
-    const mottoY     = roleY + 52;
-    const mottoLines = wrapText(ctx, userMotto, W / 2, mottoY, maxWidth, lineHeight);
+    const mottoY     = roleY + ROLE_MB + MOTTO_FS;
+    const mottoLines = wrapText(ctx, userMotto, W / 2, mottoY, maxWidth, MOTTO_LH);
 
     // 金色分隔線
-    const lineY = mottoY + lineHeight * mottoLines + 16;
+    const lineY = mottoY + MOTTO_LH * (mottoLines - 1) + MOTTO_MB + DIV_MB / 2;
     ctx.strokeStyle = '#D4A017';
-    ctx.lineWidth   = 3;
+    ctx.lineWidth   = 5;
     ctx.beginPath();
-    ctx.moveTo(W / 2 - 48, lineY);
-    ctx.lineTo(W / 2 + 48, lineY);
+    ctx.moveTo(W / 2 - 50, lineY);
+    ctx.lineTo(W / 2 + 50, lineY);
     ctx.stroke();
 
     // 品牌
-    ctx.font = '24px serif';
+    ctx.font = `${BRAND_FS}px serif`;
     ctx.fillStyle = '#A0826D';
-    ctx.fillText('新光人壽｜「再青春」下半場', W / 2, lineY + 38);
+    ctx.fillText('新光人壽｜「再青春」下半場', W / 2, lineY + DIV_MB / 2 + BRAND_FS);
 
     // 金色外框
     const inset = 18, fR = radius - inset;
@@ -1780,41 +1793,52 @@ async function downloadPostcard() {
       ctx.fillRect(0, 0, W, H);
     }
 
-    // ── 3. 半透明白色緞帶（下方 15.5%，與網頁版比例一致）─────────
-    const ribbonY = Math.round(H * 0.845);
-    const ribbonH = H - ribbonY;
+    // ── 3. 緞帶（動態高度，完全對應網頁版 CSS 比例）─────────
+    const ROLE_FS  = 23;   // clamp(9px,2.2vw,12px) × 2.512
+    const MOTTO_FS = 38;   // clamp(13px,3.5vw,19px) × 2.512
+    const MOTTO_LH = 53;   // motto_fs × 1.4
+    const BRAND_FS = 20;   // clamp(8px,1.8vw,10px) × 2.512
+    const PAD_TOP  = 30;   // 12px × 2.512
+    const PAD_BOT  = 40;   // 16px × 2.512
+    const ROLE_MB  = 10;   // 4px × 2.512
+    const MOTTO_MB = 15;   // 6px × 2.512
+    const DIV_MB   = 20;   // 8px × 2.512
+
+    ctx.font = `bold ${MOTTO_FS}px serif`;
+    const maxWidth  = W - 80;
+    const tempLines = Math.ceil(ctx.measureText(motto).width / maxWidth) || 1;
+    const ribbonH   = PAD_TOP + ROLE_FS + ROLE_MB + (MOTTO_LH * tempLines) + MOTTO_MB + 5 + DIV_MB + BRAND_FS + PAD_BOT;
+    const ribbonY   = H - ribbonH;
+
     ctx.fillStyle = 'rgba(255, 255, 255, 0.88)';
     ctx.fillRect(0, ribbonY, W, ribbonH);
 
     // ── 4. 角色名稱 ────────────────────────────
-    const roleY = ribbonY + 44;
-    ctx.font = 'bold 28px serif';
+    const roleY = ribbonY + PAD_TOP + ROLE_FS;
+    ctx.font = `bold ${ROLE_FS}px serif`;
     ctx.fillStyle = '#C0392B';
     ctx.textAlign = 'center';
     ctx.fillText(`◆ ${char.name}`, W / 2, roleY);
 
     // ── 5. 金句文字（自動換行）─────────────────
-    ctx.font = 'bold 46px serif';
+    ctx.font = `bold ${MOTTO_FS}px serif`;
     ctx.fillStyle = '#2C1810';
-    const mottoText = motto;  // 不加「」引號，與網頁版一致
-    const maxWidth  = W - 100;
-    const lineHeight = 64;
-    const mottoY = roleY + 52;
-    const mottoLines = wrapText(ctx, mottoText, W / 2, mottoY, maxWidth, lineHeight);
+    const mottoY     = roleY + ROLE_MB + MOTTO_FS;
+    const mottoLines = wrapText(ctx, motto, W / 2, mottoY, maxWidth, MOTTO_LH);
 
     // ── 6. 金色分隔線 ──────────────────────────
-    const lineY = mottoY + lineHeight * mottoLines + 16;
+    const lineY = mottoY + MOTTO_LH * (mottoLines - 1) + MOTTO_MB + DIV_MB / 2;
     ctx.strokeStyle = '#D4A017';
-    ctx.lineWidth   = 3;
+    ctx.lineWidth   = 5;
     ctx.beginPath();
-    ctx.moveTo(W / 2 - 48, lineY);
-    ctx.lineTo(W / 2 + 48, lineY);
+    ctx.moveTo(W / 2 - 50, lineY);
+    ctx.lineTo(W / 2 + 50, lineY);
     ctx.stroke();
 
     // ── 7. 品牌文字 ────────────────────────────
-    ctx.font = '24px serif';
+    ctx.font = `${BRAND_FS}px serif`;
     ctx.fillStyle = '#A0826D';
-    ctx.fillText('新光人壽｜「再青春」下半場', W / 2, lineY + 38);
+    ctx.fillText('新光人壽｜「再青春」下半場', W / 2, lineY + DIV_MB / 2 + BRAND_FS);
 
     // ── 8. 金色圓角外框 ────────────────────────
     const inset  = 18;
