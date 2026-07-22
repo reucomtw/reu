@@ -1660,13 +1660,15 @@ async function sendEmail() {
     const mottoY     = roleY + ROLE_MB + MOTTO_FS;
     const mottoLines = wrapText(ctx, userMotto, W / 2, mottoY, maxWidth, MOTTO_LH);
 
-    // 金色分隔線
-    const lineY = mottoY + MOTTO_LH * (mottoLines - 1) + MOTTO_MB + DIV_MB / 2;
+    // 金色分隔線（最後一行金句底部 + MOTTO_MB）
+    const lastMottoBottom = mottoY + MOTTO_LH * (mottoLines - 1) + MOTTO_MB;
+    const lineY = Math.round(lastMottoBottom + DIV_MB / 2);
+    const cx    = Math.round(W / 2);
     ctx.strokeStyle = '#D4A017';
     ctx.lineWidth   = 5;
     ctx.beginPath();
-    ctx.moveTo(W / 2 - 50, lineY);
-    ctx.lineTo(W / 2 + 50, lineY);
+    ctx.moveTo(cx - 50, lineY);
+    ctx.lineTo(cx + 50, lineY);
     ctx.stroke();
 
     // 品牌
@@ -1830,12 +1832,14 @@ async function downloadPostcard() {
     const mottoLines = wrapText(ctx, motto, W / 2, mottoY, maxWidth, MOTTO_LH);
 
     // ── 6. 金色分隔線 ──────────────────────────
-    const lineY = mottoY + MOTTO_LH * (mottoLines - 1) + MOTTO_MB + DIV_MB / 2;
+    const lastMottoBottom2 = mottoY + MOTTO_LH * (mottoLines - 1) + MOTTO_MB;
+    const lineY = Math.round(lastMottoBottom2 + DIV_MB / 2);
+    const cx2   = Math.round(W / 2);
     ctx.strokeStyle = '#D4A017';
     ctx.lineWidth   = 5;
     ctx.beginPath();
-    ctx.moveTo(W / 2 - 50, lineY);
-    ctx.lineTo(W / 2 + 50, lineY);
+    ctx.moveTo(cx2 - 50, lineY);
+    ctx.lineTo(cx2 + 50, lineY);
     ctx.stroke();
 
     // ── 7. 品牌文字 ────────────────────────────
@@ -1844,7 +1848,7 @@ async function downloadPostcard() {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText('新光人壽｜「再青春」下半場', W / 2, lineY + DIV_MB / 2 + BRAND_FS / 2);
-    ctx.textBaseline = 'alphabetic'; // 重置回預設
+    ctx.textBaseline = 'alphabetic';
 
     // ── 8. 金色圓角外框 ────────────────────────
     const inset  = 18;
