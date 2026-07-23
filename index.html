@@ -1611,8 +1611,11 @@ async function sendEmail() {
     ctx.clip();
 
     // 角色圖
-    const imgUrl  = `https://event.reu.com.tw/images/characters/${char.id}_${suffix}.png`;
-    const charImg = await loadImage(imgUrl).catch(() => null);
+    const imgUrl  = `https://sk.reu.com.tw/images/characters/${char.id}_${suffix}.png`;
+    const charImg = await loadImage(imgUrl).catch(err => {
+      console.warn('圖片載入失敗（可能是 CORS）：', err);
+      return null;
+    });
     if (charImg) {
       const scale = Math.max(W / charImg.width, H / charImg.height);
       const dw = charImg.width  * scale;
@@ -1763,7 +1766,7 @@ async function downloadPostcard() {
     let suffix = 'neutral';
     if (gender === '女性') suffix = 'female';
     else if (gender === '男性') suffix = 'male';
-    const imgUrl = `https://event.reu.com.tw/images/characters/${char.id}_${suffix}.png`;
+    const imgUrl = `https://sk.reu.com.tw/images/characters/${char.id}_${suffix}.png`;
 
     const charImg = await loadImage(imgUrl).catch(() => null);
 
