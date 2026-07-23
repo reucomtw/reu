@@ -559,7 +559,7 @@
     box-shadow: 0 12px 40px rgba(0,0,0,0.2);
     margin: 0 auto 28px;
     max-width: 480px;
-    aspect-ratio: 1055 / 1491;   /* 더 길게 — 이미지가 더 많이 보임 */
+    aspect-ratio: 1055 / 1491;   /* 直式，配合角色圖比例 */
     background: var(--warm-gray);
   }
 
@@ -766,7 +766,7 @@
     .app            { max-width: 760px; padding: 0 32px 80px; }
     .banner-wrap    { max-height: 300px; border-radius: 0 0 16px 16px; }
 
-    .postcard       { max-width: 420px; }
+    .postcard       { max-width: 420px; aspect-ratio: 1055 / 1491; }
 
     .cover-hero     { padding: 48px 0 36px; }
     .cover-illustration { width: 220px; height: 220px; font-size: 90px; }
@@ -1642,8 +1642,8 @@ async function sendEmail() {
 
     // 分隔線尺寸（對應 HTML width:40px; height:2px; margin:8px auto）
     const scaleRatio   = W / 480;
-    const dividerW     = 88;
-    const dividerH     = 4;
+    const dividerW      = Math.round(40 * scaleRatio);
+    const dividerH      = Math.round(2  * scaleRatio);
     const dividerMargin = Math.round(8  * scaleRatio);
 
     ctx.font = `bold ${MOTTO_FS}px serif`;
@@ -1815,8 +1815,8 @@ async function downloadPostcard() {
 
     // 分隔線尺寸（對應 HTML width:40px; height:2px; margin:8px auto）
     const scaleRatio    = W / 480;
-    const dividerW      = 88;
-    const dividerH      = 4;
+    const dividerW      = Math.round(40 * scaleRatio);
+    const dividerH      = Math.round(2  * scaleRatio);
     const dividerMargin = Math.round(8  * scaleRatio);
 
     ctx.font = `bold ${MOTTO_FS}px serif`;
