@@ -1641,9 +1641,10 @@ async function sendEmail() {
     const MOTTO_MB = 15;
 
     // 分隔線尺寸（對應 HTML width:40px; height:2px; margin:8px auto）
-    const scaleRatio   = W / 400;  // 實測明信片寬度 400px
+    const PREVIEW_WIDTH = document.getElementById('postcardEl').getBoundingClientRect().width || 400;
+    const scaleRatio   = W / PREVIEW_WIDTH;
     const dividerW      = Math.round(40 * scaleRatio);
-    const dividerH      = Math.round(2  * scaleRatio);
+    const dividerH      = Math.max(1, Math.round(2  * scaleRatio));
     const dividerMargin = Math.round(8  * scaleRatio);
 
     ctx.font = `bold ${MOTTO_FS}px serif`;
@@ -1814,9 +1815,10 @@ async function downloadPostcard() {
     const MOTTO_MB = 15;
 
     // 分隔線尺寸（對應 HTML width:40px; height:2px; margin:8px auto）
-    const scaleRatio    = W / 400;  // 實測明信片寬度 400px
+    const PREVIEW_WIDTH = document.getElementById('postcardEl').getBoundingClientRect().width || 400;
+    const scaleRatio    = W / PREVIEW_WIDTH;
     const dividerW      = Math.round(40 * scaleRatio);
-    const dividerH      = Math.round(2  * scaleRatio);
+    const dividerH      = Math.max(1, Math.round(2  * scaleRatio));
     const dividerMargin = Math.round(8  * scaleRatio);
 
     ctx.font = `bold ${MOTTO_FS}px serif`;
