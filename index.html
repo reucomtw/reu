@@ -1630,17 +1630,17 @@ async function sendEmail() {
       ctx.fillRect(0, 0, W, H);
     }
 
-    // 緞帶（完全對應網頁版 CSS 比例）
-    const ROLE_FS  = 23;
-    const MOTTO_FS = 38;
-    const MOTTO_LH = 53;
-    const BRAND_FS = 20;
-    const PAD_TOP  = 30;
-    const PAD_BOT  = 40;
-    const ROLE_MB  = 10;
-    const MOTTO_MB = 15;
+    // 緞帶（所有數值從實測換算：網頁明信片 400px 實測）
+    const ROLE_FS  = 29;   // 實測 10.824px × 2.6375
+    const MOTTO_FS = 45;   // 實測 17.22px × 2.6375
+    const MOTTO_LH = 71;   // 實測緞帶高度反推
+    const BRAND_FS = 23;   // 實測 8.856px × 2.6375
+    const PAD_TOP  = 32;   // CSS 12px × 2.6375
+    const PAD_BOT  = 42;   // CSS 16px × 2.6375
+    const ROLE_MB  = 11;   // CSS 4px × 2.6375
+    const MOTTO_MB = 16;   // CSS 6px × 2.6375
 
-    // 分隔線尺寸（對應 HTML width:40px; height:2px; margin:8px auto）
+    // 分隔線（實測 40×2px，動態換算）
     const PREVIEW_WIDTH = document.getElementById('postcardEl').getBoundingClientRect().width || 400;
     const scaleRatio   = W / PREVIEW_WIDTH;
     const dividerW      = Math.round(40 * scaleRatio);
@@ -1804,17 +1804,17 @@ async function downloadPostcard() {
       ctx.fillRect(0, 0, W, H);
     }
 
-    // ── 3. 緞帶（動態高度，完全對應網頁版 CSS 比例）─────────
-    const ROLE_FS  = 23;
-    const MOTTO_FS = 38;
-    const MOTTO_LH = 53;
-    const BRAND_FS = 20;
-    const PAD_TOP  = 30;
-    const PAD_BOT  = 40;
-    const ROLE_MB  = 10;
-    const MOTTO_MB = 15;
+    // ── 3. 緞帶（所有數值從實測換算：網頁明信片 400px 實測）─────────
+    const ROLE_FS  = 29;   // 實測 10.824px × 2.6375
+    const MOTTO_FS = 45;   // 實測 17.22px × 2.6375
+    const MOTTO_LH = 71;   // 實測緞帶高度反推
+    const BRAND_FS = 23;   // 實測 8.856px × 2.6375
+    const PAD_TOP  = 32;   // CSS 12px × 2.6375
+    const PAD_BOT  = 42;   // CSS 16px × 2.6375
+    const ROLE_MB  = 11;   // CSS 4px × 2.6375
+    const MOTTO_MB = 16;   // CSS 6px × 2.6375
 
-    // 分隔線尺寸（對應 HTML width:40px; height:2px; margin:8px auto）
+    // 分隔線（實測 40×2px，動態換算）
     const PREVIEW_WIDTH = document.getElementById('postcardEl').getBoundingClientRect().width || 400;
     const scaleRatio    = W / PREVIEW_WIDTH;
     const dividerW      = Math.round(40 * scaleRatio);
