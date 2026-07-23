@@ -1577,7 +1577,8 @@ async function sendEmail() {
   }));
 
   // ── 用快取的 Canvas（或重新生成）──────────────
-  let postcardBase64 = '';
+  let postcardBase64 = '';     // JPEG 用於 Email 內文
+  let postcardPngBase64 = '';  // PNG 用於附件
   try {
     const char   = selectedChar;
     const gender = answerTexts[0] || '';
@@ -1587,9 +1588,10 @@ async function sendEmail() {
 
     const canvas = cachedPostcardCanvas
       || await buildPostcardCanvas(char, suffix, userMotto);
-    postcardBase64 = canvas.toDataURL('image/png').split(',')[1];
+    postcardBase64    = canvas.toDataURL('image/jpeg', 0.75).split(',')[1]; // 內文用
+    postcardPngBase64 = canvas.toDataURL('image/png').split(',')[1];         // 附件用
   } catch (err) {
-    console.warn('圖片合成失敗，將以無附件方式寄送：', err);
+    console.warn('圖片合成失敗：', err);
   }
 
   const payload = {
@@ -1603,7 +1605,8 @@ async function sendEmail() {
     claimsScore:     claimsScore,
     financeScore:    financeScore,
     answers:         questionDetails,
-    postcardBase64:  postcardBase64    // 合成好的明信片圖片
+    postcardBase64:    postcardBase64,      // JPEG 內文嵌入
+    postcardPngBase64: postcardPngBase64    // PNG 附件
   };
 
   try {
