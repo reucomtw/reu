@@ -1319,7 +1319,7 @@ const CHARACTERS = [
    ⚙️ Google Sheets 串接設定
    步驟：建立 Apps Script → 部署為 Web App → 貼上網址
    ============================================= */
-const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbzmi4tHfvJBL-CSbWCKZSk5tCsZaV5EtPNRg884kzeb835wyPiMZg3uA37bti6yQOY-zg/exec';
+const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbywlof9BnyyYdXJKaGd7f0EgHawC-pkt1It8koBUwv_WQa4WvZhBC_lKjCxFppi7p4PKQ/exec';
 // 👆 將 Google Apps Script 部署後的網址貼在這裡（設定說明文件有詳細步驟）
 
 /* =============================================
@@ -1334,6 +1334,7 @@ let financeScore = 0;
 let selectedChar = null;
 let userMotto = '';
 let userEmail = '';
+let cachedPostcardCanvas = null;  // 快取明信片 Canvas，避免重複生成
 
 /* =============================================
    問卷邏輯
@@ -1535,6 +1536,7 @@ function generatePostcard() {
 
   userMotto = motto;
   userEmail = email;
+  cachedPostcardCanvas = null;  // 清除舊快取
 
   const char = selectedChar;
   const genderAnswer = answerTexts[0] || '';
@@ -1557,11 +1559,23 @@ function generatePostcard() {
     document.getElementById('postcardEl').style.background = char.leftBg;
   };
 
-  // 隱藏右上角小圖（不再使用）
-  document.getElementById('postcardImg').style.display = 'none';
+  document.getElementById('postcardImg').style.display   = 'none';
   document.getElementById('postcardEmoji').style.display = 'none';
 
   showScreen('screen-postcard');
+
+  // 圖片載入完成後在背景生成 Canvas（預先快取）
+  bgImg.onload = function() {
+    buildPostcardCanvas(char, suffix, motto).then(canvas => {
+      cachedPostcardCanvas = canvas;
+    }).catch(() => {});
+  };
+  // 若圖片已快取直接生成
+  if (bgImg.complete && bgImg.naturalWidth > 0) {
+    buildPostcardCanvas(char, suffix, motto).then(canvas => {
+      cachedPostcardCanvas = canvas;
+    }).catch(() => {});
+  }
 }
 
 /* =============================================
@@ -1569,7 +1583,6 @@ function generatePostcard() {
    ============================================= */
 async function sendEmail() {
   document.getElementById('sendingOverlay').classList.add('active');
-  document.getElementById('sending-text') && (document.getElementById('sending-text').textContent = '正在合成明信片…');
 
   // 組裝每題答案
   const questionDetails = QUESTIONS.map((q, i) => ({
@@ -1580,7 +1593,7 @@ async function sendEmail() {
     score: answers[i]     || 0
   }));
 
-  // ── 先用 Canvas 合成明信片圖片 ──────────────
+  // ── 用快取的 Canvas（或重新生成）──────────────
   let postcardBase64 = '';
   try {
     const char   = selectedChar;
@@ -1589,111 +1602,9 @@ async function sendEmail() {
     if (gender === '女性') suffix = 'female';
     else if (gender === '男性') suffix = 'male';
 
-    const W = 1055, H = 1491;
-    const canvas = document.createElement('canvas');
-    canvas.width  = W;
-    canvas.height = H;
-    const ctx = canvas.getContext('2d');
-
-    // 圓角裁切
-    const radius = 55;
-    ctx.beginPath();
-    ctx.moveTo(radius, 0);
-    ctx.lineTo(W - radius, 0);
-    ctx.quadraticCurveTo(W, 0, W, radius);
-    ctx.lineTo(W, H - radius);
-    ctx.quadraticCurveTo(W, H, W - radius, H);
-    ctx.lineTo(radius, H);
-    ctx.quadraticCurveTo(0, H, 0, H - radius);
-    ctx.lineTo(0, radius);
-    ctx.quadraticCurveTo(0, 0, radius, 0);
-    ctx.closePath();
-    ctx.clip();
-
-    // 角色圖
-    const imgUrl  = `https://sk.reu.com.tw/images/characters/${char.id}_${suffix}.png`;
-    const charImg = await loadImage(imgUrl).catch(err => {
-      console.warn('圖片載入失敗（可能是 CORS）：', err);
-      return null;
-    });
-    if (charImg) {
-      const scale = Math.max(W / charImg.width, H / charImg.height);
-      const dw = charImg.width  * scale;
-      const dh = charImg.height * scale;
-      ctx.drawImage(charImg, (W - dw) / 2, (H - dh) / 2, dw, dh);
-    } else {
-      const grad = ctx.createLinearGradient(0, 0, W, H);
-      const colors = char.leftBg.match(/#[0-9A-Fa-f]{6}/g) || ['#C0392B','#922B21'];
-      grad.addColorStop(0, colors[0]);
-      grad.addColorStop(1, colors[1] || colors[0]);
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, W, H);
-    }
-
-    // 緞帶（從 HTML DOM 動態讀取所有尺寸）
-    const m = getRibbonMetrics(W);
-    const { ROLE_FS, MOTTO_FS, MOTTO_LH, BRAND_FS,
-            PAD_TOP, PAD_BOT, ROLE_MB, MOTTO_MB,
-            dividerW, dividerH, dividerMargin } = m;
-
-    ctx.font = `bold ${MOTTO_FS}px serif`;
-    const maxWidth  = W - 80;
-    const tempLines = Math.ceil(ctx.measureText(userMotto).width / maxWidth) || 1;
-    const ribbonH2  = PAD_TOP + ROLE_FS + ROLE_MB + (MOTTO_LH * tempLines) + MOTTO_MB + dividerMargin + dividerH + dividerMargin + BRAND_FS + PAD_BOT;
-    const ribbonY   = H - ribbonH2;
-
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.88)';
-    ctx.fillRect(0, ribbonY, W, ribbonH2);
-
-    // 角色名稱
-    const roleY = ribbonY + PAD_TOP + ROLE_FS;
-    ctx.font = `bold ${ROLE_FS}px serif`;
-    ctx.fillStyle = '#C0392B';
-    ctx.textAlign = 'center';
-    ctx.fillText(`◆ ${char.name}`, W / 2, roleY);
-
-    // 金句
-    ctx.font = `bold ${MOTTO_FS}px serif`;
-    ctx.fillStyle = '#2C1810';
-    const mottoY     = roleY + ROLE_MB + MOTTO_FS;
-    const mottoLines = wrapText(ctx, userMotto, W / 2, mottoY, maxWidth, MOTTO_LH);
-
-    // 金色分隔線（fillRect，對應 HTML div）
-    const lastMottoBottom = mottoY + MOTTO_LH * (mottoLines - 1) + MOTTO_MB;
-    const divLineY = Math.round(lastMottoBottom + dividerMargin);
-    const divLineX = Math.round((W - dividerW) / 2);
-    ctx.fillStyle = '#D4A017';
-    ctx.fillRect(divLineX, divLineY, dividerW, dividerH);
-
-    // 品牌文字
-    const brandY = divLineY + dividerH + dividerMargin + BRAND_FS / 2;
-    ctx.font = `${BRAND_FS}px serif`;
-    ctx.fillStyle = '#A0826D';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('新光人壽｜「再青春」下半場', W / 2, brandY);
-    ctx.textBaseline = 'alphabetic';
-
-    // 金色外框
-    const inset = 18, fR = radius - inset;
-    ctx.strokeStyle = 'rgba(212,160,23,0.6)';
-    ctx.lineWidth   = 6;
-    ctx.beginPath();
-    ctx.moveTo(inset + fR, inset);
-    ctx.lineTo(W - inset - fR, inset);
-    ctx.quadraticCurveTo(W - inset, inset, W - inset, inset + fR);
-    ctx.lineTo(W - inset, H - inset - fR);
-    ctx.quadraticCurveTo(W - inset, H - inset, W - inset - fR, H - inset);
-    ctx.lineTo(inset + fR, H - inset);
-    ctx.quadraticCurveTo(inset, H - inset, inset, H - inset - fR);
-    ctx.lineTo(inset, inset + fR);
-    ctx.quadraticCurveTo(inset, inset, inset + fR, inset);
-    ctx.closePath();
-    ctx.stroke();
-
-    // 取得 base64（去掉 data:image/png;base64, 前綴）
+    const canvas = cachedPostcardCanvas
+      || await buildPostcardCanvas(char, suffix, userMotto);
     postcardBase64 = canvas.toDataURL('image/png').split(',')[1];
-
   } catch (err) {
     console.warn('圖片合成失敗，將以無附件方式寄送：', err);
   }
@@ -1770,7 +1681,7 @@ function getRibbonMetrics(canvasW) {
 }
 
 /* =============================================
-   下載明信片（Canvas 高解析度繪製）
+   下載明信片（使用快取 Canvas）
    ============================================= */
 async function downloadPostcard() {
   const btn = event.target;
@@ -1779,120 +1690,16 @@ async function downloadPostcard() {
 
   try {
     const char   = selectedChar;
-    const motto  = userMotto;
     const gender = answerTexts[0] || '';
-
-    // 輸出尺寸統一為 1055×1491（配合大多數角色圖比例）
-    const W = 1055, H = 1491;
-    const canvas = document.createElement('canvas');
-    canvas.width  = W;
-    canvas.height = H;
-    const ctx = canvas.getContext('2d');
-
-    // ── 1. 載入角色圖 ──────────────────────────
     let suffix = 'neutral';
     if (gender === '女性') suffix = 'female';
     else if (gender === '男性') suffix = 'male';
-    const imgUrl = `https://sk.reu.com.tw/images/characters/${char.id}_${suffix}.png`;
 
-    const charImg = await loadImage(imgUrl).catch(() => null);
+    const canvas = cachedPostcardCanvas
+      || await buildPostcardCanvas(char, suffix, userMotto);
 
-    // ── 2. 畫背景（角色圖 or 漸層色）──────────
-    // 先建立圓角裁切路徑
-    const radius = 55;
-    ctx.beginPath();
-    ctx.moveTo(radius, 0);
-    ctx.lineTo(W - radius, 0);
-    ctx.quadraticCurveTo(W, 0, W, radius);
-    ctx.lineTo(W, H - radius);
-    ctx.quadraticCurveTo(W, H, W - radius, H);
-    ctx.lineTo(radius, H);
-    ctx.quadraticCurveTo(0, H, 0, H - radius);
-    ctx.lineTo(0, radius);
-    ctx.quadraticCurveTo(0, 0, radius, 0);
-    ctx.closePath();
-    ctx.clip(); // 之後所有繪製都在圓角內
-    if (charImg) {
-      // 等比例填滿，置中裁切
-      const scale = Math.max(W / charImg.width, H / charImg.height);
-      const dw = charImg.width  * scale;
-      const dh = charImg.height * scale;
-      const dx = (W - dw) / 2;
-      const dy = (H - dh) / 2;
-      ctx.drawImage(charImg, dx, dy, dw, dh);
-    } else {
-      // 圖片載入失敗時用角色漸層色當底
-      const grad = ctx.createLinearGradient(0, 0, W, H);
-      const colors = char.leftBg.match(/#[0-9A-Fa-f]{6}/g) || ['#C0392B','#922B21'];
-      grad.addColorStop(0, colors[0]);
-      grad.addColorStop(1, colors[1] || colors[0]);
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, W, H);
-    }
+    if (!cachedPostcardCanvas) cachedPostcardCanvas = canvas;
 
-    // ── 3. 緞帶（從 HTML DOM 動態讀取所有尺寸）─────────
-    const m = getRibbonMetrics(W);
-    const { ROLE_FS, MOTTO_FS, MOTTO_LH, BRAND_FS,
-            PAD_TOP, PAD_BOT, ROLE_MB, MOTTO_MB,
-            dividerW, dividerH, dividerMargin } = m;
-
-    ctx.font = `bold ${MOTTO_FS}px serif`;
-    const maxWidth  = W - 80;
-    const tempLines = Math.ceil(ctx.measureText(motto).width / maxWidth) || 1;
-    const ribbonH   = PAD_TOP + ROLE_FS + ROLE_MB + (MOTTO_LH * tempLines) + MOTTO_MB + dividerMargin + dividerH + dividerMargin + BRAND_FS + PAD_BOT;
-    const ribbonY   = H - ribbonH;
-
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.88)';
-    ctx.fillRect(0, ribbonY, W, ribbonH);
-
-    // ── 4. 角色名稱 ────────────────────────────
-    const roleY = ribbonY + PAD_TOP + ROLE_FS;
-    ctx.font = `bold ${ROLE_FS}px serif`;
-    ctx.fillStyle = '#C0392B';
-    ctx.textAlign = 'center';
-    ctx.fillText(`◆ ${char.name}`, W / 2, roleY);
-
-    // ── 5. 金句文字（自動換行）─────────────────
-    ctx.font = `bold ${MOTTO_FS}px serif`;
-    ctx.fillStyle = '#2C1810';
-    const mottoY     = roleY + ROLE_MB + MOTTO_FS;
-    const mottoLines = wrapText(ctx, motto, W / 2, mottoY, maxWidth, MOTTO_LH);
-
-    // ── 6. 金色分隔線（fillRect，精確對應 HTML div）──────────
-    const lastMottoBottom2 = mottoY + MOTTO_LH * (mottoLines - 1) + MOTTO_MB;
-    const divLineY = Math.round(lastMottoBottom2 + dividerMargin);
-    const divLineX = Math.round((W - dividerW) / 2);
-    ctx.fillStyle = '#D4A017';
-    ctx.fillRect(divLineX, divLineY, dividerW, dividerH);
-
-    // ── 7. 品牌文字 ────────────────────────────
-    const brandY = divLineY + dividerH + dividerMargin + BRAND_FS / 2;
-    ctx.font = `${BRAND_FS}px serif`;
-    ctx.fillStyle = '#A0826D';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('新光人壽｜「再青春」下半場', W / 2, brandY);
-    ctx.textBaseline = 'alphabetic';
-
-    // ── 8. 金色圓角外框 ────────────────────────
-    const inset  = 18;
-    const fRadius = radius - inset;
-    ctx.strokeStyle = 'rgba(212,160,23,0.6)';
-    ctx.lineWidth   = 6;
-    ctx.beginPath();
-    ctx.moveTo(inset + fRadius, inset);
-    ctx.lineTo(W - inset - fRadius, inset);
-    ctx.quadraticCurveTo(W - inset, inset, W - inset, inset + fRadius);
-    ctx.lineTo(W - inset, H - inset - fRadius);
-    ctx.quadraticCurveTo(W - inset, H - inset, W - inset - fRadius, H - inset);
-    ctx.lineTo(inset + fRadius, H - inset);
-    ctx.quadraticCurveTo(inset, H - inset, inset, H - inset - fRadius);
-    ctx.lineTo(inset, inset + fRadius);
-    ctx.quadraticCurveTo(inset, inset, inset + fRadius, inset);
-    ctx.closePath();
-    ctx.stroke();
-
-    // ── 9. 下載 ────────────────────────────────
     const link = document.createElement('a');
     link.download = `再青春明信片_${char.name}.png`;
     link.href = canvas.toDataURL('image/png');
@@ -1905,6 +1712,112 @@ async function downloadPostcard() {
     btn.textContent = '下載明信片圖片';
     btn.disabled = false;
   }
+}
+
+/* =============================================
+   共用 Canvas 繪製函數（sendEmail 和 download 共用）
+   ============================================= */
+async function buildPostcardCanvas(char, suffix, motto) {
+  const W = 1055, H = 1491;
+  const canvas = document.createElement('canvas');
+  canvas.width  = W;
+  canvas.height = H;
+  const ctx = canvas.getContext('2d');
+
+  // 圓角裁切
+  const radius = 55;
+  ctx.beginPath();
+  ctx.moveTo(radius, 0);
+  ctx.lineTo(W - radius, 0);
+  ctx.quadraticCurveTo(W, 0, W, radius);
+  ctx.lineTo(W, H - radius);
+  ctx.quadraticCurveTo(W, H, W - radius, H);
+  ctx.lineTo(radius, H);
+  ctx.quadraticCurveTo(0, H, 0, H - radius);
+  ctx.lineTo(0, radius);
+  ctx.quadraticCurveTo(0, 0, radius, 0);
+  ctx.closePath();
+  ctx.clip();
+
+  // 角色圖
+  const imgUrl  = `https://sk.reu.com.tw/images/characters/${char.id}_${suffix}.png`;
+  const charImg = await loadImage(imgUrl).catch(() => null);
+  if (charImg) {
+    const scale = Math.max(W / charImg.width, H / charImg.height);
+    const dw = charImg.width  * scale;
+    const dh = charImg.height * scale;
+    ctx.drawImage(charImg, (W - dw) / 2, (H - dh) / 2, dw, dh);
+  } else {
+    const grad = ctx.createLinearGradient(0, 0, W, H);
+    const colors = char.leftBg.match(/#[0-9A-Fa-f]{6}/g) || ['#C0392B','#922B21'];
+    grad.addColorStop(0, colors[0]);
+    grad.addColorStop(1, colors[1] || colors[0]);
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, H);
+  }
+
+  // 緞帶（從 HTML DOM 動態讀取）
+  const m = getRibbonMetrics(W);
+  const { ROLE_FS, MOTTO_FS, MOTTO_LH, BRAND_FS,
+          PAD_TOP, PAD_BOT, ROLE_MB, MOTTO_MB,
+          dividerW, dividerH, dividerMargin } = m;
+
+  ctx.font = `bold ${MOTTO_FS}px serif`;
+  const maxWidth  = W - 80;
+  const tempLines = Math.ceil(ctx.measureText(motto).width / maxWidth) || 1;
+  const ribbonH   = PAD_TOP + ROLE_FS + ROLE_MB + (MOTTO_LH * tempLines) + MOTTO_MB + dividerMargin + dividerH + dividerMargin + BRAND_FS + PAD_BOT;
+  const ribbonY   = H - ribbonH;
+
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.88)';
+  ctx.fillRect(0, ribbonY, W, ribbonH);
+
+  // 角色名稱
+  const roleY = ribbonY + PAD_TOP + ROLE_FS;
+  ctx.font = `bold ${ROLE_FS}px serif`;
+  ctx.fillStyle = '#C0392B';
+  ctx.textAlign = 'center';
+  ctx.fillText(`◆ ${char.name}`, W / 2, roleY);
+
+  // 金句
+  ctx.font = `bold ${MOTTO_FS}px serif`;
+  ctx.fillStyle = '#2C1810';
+  const mottoY     = roleY + ROLE_MB + MOTTO_FS;
+  const mottoLines = wrapText(ctx, motto, W / 2, mottoY, maxWidth, MOTTO_LH);
+
+  // 金色分隔線
+  const lastMottoBottom = mottoY + MOTTO_LH * (mottoLines - 1) + MOTTO_MB;
+  const divLineY = Math.round(lastMottoBottom + dividerMargin);
+  const divLineX = Math.round((W - dividerW) / 2);
+  ctx.fillStyle = '#D4A017';
+  ctx.fillRect(divLineX, divLineY, dividerW, dividerH);
+
+  // 品牌文字
+  const brandY = divLineY + dividerH + dividerMargin + BRAND_FS / 2;
+  ctx.font = `${BRAND_FS}px serif`;
+  ctx.fillStyle = '#A0826D';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('新光人壽｜「再青春」下半場', W / 2, brandY);
+  ctx.textBaseline = 'alphabetic';
+
+  // 金色圓角外框
+  const inset = 18, fR = radius - inset;
+  ctx.strokeStyle = 'rgba(212,160,23,0.6)';
+  ctx.lineWidth   = 6;
+  ctx.beginPath();
+  ctx.moveTo(inset + fR, inset);
+  ctx.lineTo(W - inset - fR, inset);
+  ctx.quadraticCurveTo(W - inset, inset, W - inset, inset + fR);
+  ctx.lineTo(W - inset, H - inset - fR);
+  ctx.quadraticCurveTo(W - inset, H - inset, W - inset - fR, H - inset);
+  ctx.lineTo(inset + fR, H - inset);
+  ctx.quadraticCurveTo(inset, H - inset, inset, H - inset - fR);
+  ctx.lineTo(inset, inset + fR);
+  ctx.quadraticCurveTo(inset, inset, inset + fR, inset);
+  ctx.closePath();
+  ctx.stroke();
+
+  return canvas;
 }
 
 // 載入圖片（Promise）
