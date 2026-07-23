@@ -911,22 +911,20 @@
       <p>這是屬於您的人生宣言</p>
     </div>
 
-    <!-- 明信片 -->
-    <div class="postcard" id="postcardEl">
-      <!-- 底圖：角色場景圖 -->
-      <img class="postcard-bg" id="postcardBg" src="" alt="">
+    <!-- 明信片（Canvas 直接顯示） -->
+    <div class="postcard" id="postcardEl" style="display:flex;align-items:center;justify-content:center;background:var(--warm-gray);">
+      <canvas id="postcardCanvas" style="width:100%;height:100%;border-radius:20px;display:block;"></canvas>
+    </div>
 
-      <!-- 右上角角色徽章 -->
-      <img class="postcard-char-badge" id="postcardImg" src="" alt=""
-           onerror="this.style.display='none';document.getElementById('postcardEmoji').style.display='flex'">
-      <div class="postcard-char-badge-emoji" id="postcardEmoji" style="display:none"></div>
-
-      <!-- 下方緞帶 -->
-      <div class="postcard-ribbon">
-        <div class="postcard-ribbon-role" id="postcardRoleName"></div>
-        <div class="postcard-ribbon-motto" id="postcardMotto"></div>
-        <div style="width:40px;height:2px;background:var(--gold);margin:8px auto;"></div>
-        <div class="postcard-ribbon-brand">新光人壽｜「再青春」下半場</div>
+    <!-- 保留緞帶元素供 getRibbonMetrics 讀取尺寸（隱藏） -->
+    <div style="position:absolute;visibility:hidden;pointer-events:none;width:400px;">
+      <div class="postcard" style="aspect-ratio:1055/1491;">
+        <div class="postcard-ribbon">
+          <div class="postcard-ribbon-role" id="postcardRoleName"></div>
+          <div class="postcard-ribbon-motto" id="postcardMotto">測量用</div>
+          <div style="width:40px;height:2px;background:var(--gold);margin:8px auto;" id="postcardDivider"></div>
+          <div class="postcard-ribbon-brand">新光人壽｜「再青春」下半場</div>
+        </div>
       </div>
     </div>
 
@@ -1536,46 +1534,31 @@ function generatePostcard() {
 
   userMotto = motto;
   userEmail = email;
-  cachedPostcardCanvas = null;  // 清除舊快取
+  cachedPostcardCanvas = null;
 
-  const char = selectedChar;
-  const genderAnswer = answerTexts[0] || '';
+  document.getElementById('emailDisplay').textContent = email;
 
-  // 填入緞帶文字
-  document.getElementById('postcardMotto').textContent    = motto;
-  document.getElementById('postcardRoleName').textContent = `${char.emoji} ${char.name}`;
-  document.getElementById('emailDisplay').textContent     = email;
-
-  // 性別對應後綴
-  let suffix = 'neutral';
-  if (genderAnswer === '女性') suffix = 'female';
-  else if (genderAnswer === '男性') suffix = 'male';
-
-  // 角色圖鋪滿當底圖
-  const bgImg = document.getElementById('postcardBg');
-  bgImg.src = `${IMG_BASE}/characters/${char.id}_${suffix}.png`;
-  bgImg.onerror = function() {
-    this.style.display = 'none';
-    document.getElementById('postcardEl').style.background = char.leftBg;
-  };
-
-  document.getElementById('postcardImg').style.display   = 'none';
-  document.getElementById('postcardEmoji').style.display = 'none';
-
+  // 先顯示畫面（讓 postcardEl 有實際尺寸可以讀取）
   showScreen('screen-postcard');
 
-  // 圖片載入完成後在背景生成 Canvas（預先快取）
-  bgImg.onload = function() {
-    buildPostcardCanvas(char, suffix, motto).then(canvas => {
-      cachedPostcardCanvas = canvas;
-    }).catch(() => {});
-  };
-  // 若圖片已快取直接生成
-  if (bgImg.complete && bgImg.naturalWidth > 0) {
-    buildPostcardCanvas(char, suffix, motto).then(canvas => {
-      cachedPostcardCanvas = canvas;
-    }).catch(() => {});
-  }
+  // 生成 Canvas 並顯示
+  const char   = selectedChar;
+  const gender = answerTexts[0] || '';
+  let suffix = 'neutral';
+  if (gender === '女性') suffix = 'female';
+  else if (gender === '男性') suffix = 'male';
+
+  buildPostcardCanvas(char, suffix, motto).then(canvas => {
+    cachedPostcardCanvas = canvas;
+
+    // 把生成的 canvas 內容複製到顯示用的 canvas
+    const displayCanvas = document.getElementById('postcardCanvas');
+    displayCanvas.width  = canvas.width;
+    displayCanvas.height = canvas.height;
+    displayCanvas.getContext('2d').drawImage(canvas, 0, 0);
+  }).catch(err => {
+    console.error('明信片生成失敗：', err);
+  });
 }
 
 /* =============================================
@@ -1628,7 +1611,7 @@ async function sendEmail() {
       await fetch(GOOGLE_SHEET_URL, {
         method: 'POST',
         mode:   'no-cors',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'text/plain' },
         body: JSON.stringify(payload)
       });
     } else {
@@ -1647,11 +1630,13 @@ async function sendEmail() {
    從 HTML 動態讀取緞帶所有尺寸，換算到 Canvas
    ============================================= */
 function getRibbonMetrics(canvasW) {
-  const postcardEl = document.getElementById('postcardEl');
-  const roleEl     = postcardEl.querySelector('.postcard-ribbon-role');
-  const mottoEl    = postcardEl.querySelector('.postcard-ribbon-motto');
-  const brandEl    = postcardEl.querySelector('.postcard-ribbon-brand');
-  const dividerEl  = mottoEl.nextElementSibling;
+  // 從隱藏的量測元素讀取實際 CSS 計算值
+  const mottoEl    = document.getElementById('postcardMotto');
+  const roleEl     = document.querySelector('.postcard-ribbon-role');
+  const brandEl    = document.querySelector('.postcard-ribbon-brand');
+  const dividerEl  = document.getElementById('postcardDivider');
+  const ribbonEl   = mottoEl.closest('.postcard-ribbon');
+  const postcardEl = mottoEl.closest('.postcard');
 
   const previewWidth = postcardEl.getBoundingClientRect().width || 400;
   const scale = canvasW / previewWidth;
@@ -1661,8 +1646,7 @@ function getRibbonMetrics(canvasW) {
   const mottoStyle  = getComputedStyle(mottoEl);
   const brandStyle  = getComputedStyle(brandEl);
   const divStyle    = getComputedStyle(dividerEl);
-  const ribbonStyle = getComputedStyle(postcardEl.querySelector('.postcard-ribbon'));
-
+  const ribbonStyle = getComputedStyle(ribbonEl);
   const dividerRect = dividerEl.getBoundingClientRect();
 
   return {
