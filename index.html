@@ -1630,22 +1630,11 @@ async function sendEmail() {
       ctx.fillRect(0, 0, W, H);
     }
 
-    // 緞帶（所有數值從實測換算：網頁明信片 400px 實測）
-    const ROLE_FS  = 29;   // 實測 10.824px × 2.6375
-    const MOTTO_FS = 45;   // 實測 17.22px × 2.6375
-    const MOTTO_LH = 71;   // 實測緞帶高度反推
-    const BRAND_FS = 23;   // 實測 8.856px × 2.6375
-    const PAD_TOP  = 32;   // CSS 12px × 2.6375
-    const PAD_BOT  = 42;   // CSS 16px × 2.6375
-    const ROLE_MB  = 11;   // CSS 4px × 2.6375
-    const MOTTO_MB = 16;   // CSS 6px × 2.6375
-
-    // 分隔線（實測 40×2px，動態換算）
-    const PREVIEW_WIDTH = document.getElementById('postcardEl').getBoundingClientRect().width || 400;
-    const scaleRatio   = W / PREVIEW_WIDTH;
-    const dividerW      = Math.round(40 * scaleRatio);
-    const dividerH      = Math.max(1, Math.round(2  * scaleRatio));
-    const dividerMargin = Math.round(8  * scaleRatio);
+    // 緞帶（從 HTML DOM 動態讀取所有尺寸）
+    const m = getRibbonMetrics(W);
+    const { ROLE_FS, MOTTO_FS, MOTTO_LH, BRAND_FS,
+            PAD_TOP, PAD_BOT, ROLE_MB, MOTTO_MB,
+            dividerW, dividerH, dividerMargin } = m;
 
     ctx.font = `bold ${MOTTO_FS}px serif`;
     const maxWidth  = W - 80;
@@ -1744,6 +1733,43 @@ async function sendEmail() {
 }
 
 /* =============================================
+   從 HTML 動態讀取緞帶所有尺寸，換算到 Canvas
+   ============================================= */
+function getRibbonMetrics(canvasW) {
+  const postcardEl = document.getElementById('postcardEl');
+  const roleEl     = postcardEl.querySelector('.postcard-ribbon-role');
+  const mottoEl    = postcardEl.querySelector('.postcard-ribbon-motto');
+  const brandEl    = postcardEl.querySelector('.postcard-ribbon-brand');
+  const dividerEl  = mottoEl.nextElementSibling;
+
+  const previewWidth = postcardEl.getBoundingClientRect().width || 400;
+  const scale = canvasW / previewWidth;
+  const px = v => Math.round(parseFloat(v) * scale);
+
+  const roleStyle   = getComputedStyle(roleEl);
+  const mottoStyle  = getComputedStyle(mottoEl);
+  const brandStyle  = getComputedStyle(brandEl);
+  const divStyle    = getComputedStyle(dividerEl);
+  const ribbonStyle = getComputedStyle(postcardEl.querySelector('.postcard-ribbon'));
+
+  const dividerRect = dividerEl.getBoundingClientRect();
+
+  return {
+    ROLE_FS:       px(roleStyle.fontSize),
+    MOTTO_FS:      px(mottoStyle.fontSize),
+    MOTTO_LH:      Math.round(parseFloat(mottoStyle.lineHeight) * scale),
+    BRAND_FS:      px(brandStyle.fontSize),
+    PAD_TOP:       px(ribbonStyle.paddingTop),
+    PAD_BOT:       px(ribbonStyle.paddingBottom),
+    ROLE_MB:       px(roleStyle.marginBottom),
+    MOTTO_MB:      px(mottoStyle.marginBottom),
+    dividerW:      Math.round(dividerRect.width  * scale),
+    dividerH:      Math.max(1, Math.round(dividerRect.height * scale)),
+    dividerMargin: px(divStyle.marginTop),
+  };
+}
+
+/* =============================================
    下載明信片（Canvas 高解析度繪製）
    ============================================= */
 async function downloadPostcard() {
@@ -1804,22 +1830,11 @@ async function downloadPostcard() {
       ctx.fillRect(0, 0, W, H);
     }
 
-    // ── 3. 緞帶（所有數值從實測換算：網頁明信片 400px 實測）─────────
-    const ROLE_FS  = 29;   // 實測 10.824px × 2.6375
-    const MOTTO_FS = 45;   // 實測 17.22px × 2.6375
-    const MOTTO_LH = 71;   // 實測緞帶高度反推
-    const BRAND_FS = 23;   // 實測 8.856px × 2.6375
-    const PAD_TOP  = 32;   // CSS 12px × 2.6375
-    const PAD_BOT  = 42;   // CSS 16px × 2.6375
-    const ROLE_MB  = 11;   // CSS 4px × 2.6375
-    const MOTTO_MB = 16;   // CSS 6px × 2.6375
-
-    // 分隔線（實測 40×2px，動態換算）
-    const PREVIEW_WIDTH = document.getElementById('postcardEl').getBoundingClientRect().width || 400;
-    const scaleRatio    = W / PREVIEW_WIDTH;
-    const dividerW      = Math.round(40 * scaleRatio);
-    const dividerH      = Math.max(1, Math.round(2  * scaleRatio));
-    const dividerMargin = Math.round(8  * scaleRatio);
+    // ── 3. 緞帶（從 HTML DOM 動態讀取所有尺寸）─────────
+    const m = getRibbonMetrics(W);
+    const { ROLE_FS, MOTTO_FS, MOTTO_LH, BRAND_FS,
+            PAD_TOP, PAD_BOT, ROLE_MB, MOTTO_MB,
+            dividerW, dividerH, dividerMargin } = m;
 
     ctx.font = `bold ${MOTTO_FS}px serif`;
     const maxWidth  = W - 80;
