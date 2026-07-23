@@ -1639,8 +1639,8 @@ async function sendEmail() {
 
     // 分隔線尺寸（對應 HTML width:40px; height:2px; margin:8px auto）
     const scaleRatio   = W / 480;
-    const dividerW     = Math.round(40 * scaleRatio);
-    const dividerH     = Math.round(2  * scaleRatio);
+    const dividerW     = 88;
+    const dividerH     = 4;
     const dividerMargin = Math.round(8  * scaleRatio);
 
     ctx.font = `bold ${MOTTO_FS}px serif`;
@@ -1812,8 +1812,8 @@ async function downloadPostcard() {
 
     // 分隔線尺寸（對應 HTML width:40px; height:2px; margin:8px auto）
     const scaleRatio    = W / 480;
-    const dividerW      = Math.round(40 * scaleRatio);
-    const dividerH      = Math.round(2  * scaleRatio);
+    const dividerW      = 88;
+    const dividerH      = 4;
     const dividerMargin = Math.round(8  * scaleRatio);
 
     ctx.font = `bold ${MOTTO_FS}px serif`;
