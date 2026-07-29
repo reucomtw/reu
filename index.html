@@ -1577,19 +1577,32 @@ async function sendEmail() {
   }));
 
   // ── 用快取的 Canvas（或重新生成）──────────────
-  let postcardBase64 = '';     // JPEG 用於 Email 內文
-  let postcardPngBase64 = '';  // PNG 用於附件
+  // 合成含金句的縮小版 JPEG 給 Email 內文（844x1193，約 0.18MB）
+  let postcardBase64 = '';
+  let charImageUrl   = '';
   try {
     const char   = selectedChar;
     const gender = answerTexts[0] || '';
-    let suffix = 'neutral';
-    if (gender === '女性') suffix = 'female';
-    else if (gender === '男性') suffix = 'male';
+    const q3     = answerTexts[2] || '';
+    let suffix   = gender === '女性' ? 'female' : gender === '男性' ? 'male' : 'neutral';
+    const hasKids    = q3.includes('有小孩') || q3.includes('上有老下有小');
+    const needsSwitch = (char.id === 'warrior' || char.id === 'anxious');
+    const imgSuffix   = (needsSwitch && !hasKids) ? `${suffix}_nokids` : suffix;
 
-    const canvas = cachedPostcardCanvas
-      || await buildPostcardCanvas(char, suffix, userMotto);
-    postcardBase64    = canvas.toDataURL('image/jpeg', 0.75).split(',')[1]; // 內文用
-    postcardPngBase64 = canvas.toDataURL('image/png').split(',')[1];         // 附件用
+    // 原始 Canvas（1055x1491）
+    const fullCanvas = cachedPostcardCanvas
+      || await buildPostcardCanvas(char, imgSuffix, userMotto);
+
+    // 縮小到 844x1193 給 Email 用
+    const EW = 844, EH = 1193;
+    const emailCanvas = document.createElement('canvas');
+    emailCanvas.width  = EW;
+    emailCanvas.height = EH;
+    emailCanvas.getContext('2d').drawImage(fullCanvas, 0, 0, EW, EH);
+    postcardBase64 = emailCanvas.toDataURL('image/jpeg', 0.75).split(',')[1];
+
+    // 角色圖網址供附件用
+    charImageUrl = `https://sk.reu.com.tw/images/characters/${char.id}_${imgSuffix}.png`;
   } catch (err) {
     console.warn('圖片合成失敗：', err);
   }
@@ -1605,8 +1618,8 @@ async function sendEmail() {
     claimsScore:     claimsScore,
     financeScore:    financeScore,
     answers:         questionDetails,
-    postcardBase64:    postcardBase64,      // JPEG 內文嵌入
-    postcardPngBase64: postcardPngBase64    // PNG 附件
+    postcardBase64: postcardBase64,  // 含金句 JPEG（844x1193，約 0.18MB）
+    charImageUrl:   charImageUrl     // 角色圖網址供 PNG 附件用
   };
 
   try {
