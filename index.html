@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>新光人壽｜找到我的人生下半場</title>
+<link rel="icon" href="data:,">
 <style>
   /* =============================================
      🎨 品牌色彩設定（可修改）
@@ -1586,7 +1587,7 @@ async function sendEmail() {
     const q3     = answerTexts[2] || '';
     let suffix   = gender === '女性' ? 'female' : gender === '男性' ? 'male' : 'neutral';
     const hasKids     = q3.includes('有小孩') || q3.includes('上有老下有小');
-    const needsSwitch = (char.id === 'warrior' || char.id === 'anxious');
+    const needsSwitch = ['warrior','anxious','wise','steady'].includes(char.id);
     const imgSuffix   = (needsSwitch && !hasKids) ? `${suffix}_nokids` : suffix;
 
     const fullCanvas = cachedPostcardCanvas
@@ -1739,9 +1740,9 @@ async function buildPostcardCanvas(char, suffix, motto) {
   // 判斷是否有小孩（Q3 是 index 2）
   const q3Answer  = answerTexts[2] || '';
   const hasKids   = q3Answer.includes('有小孩') || q3Answer.includes('上有老下有小');
-  const needsSwitch = (char.id === 'warrior' || char.id === 'anxious');
+  const needsSwitch = ['warrior','anxious','wise','steady'].includes(char.id);
   const imgSuffix   = (needsSwitch && !hasKids) ? `${suffix}_nokids` : suffix;
-  const imgUrl    = `https://sk.reu.com.tw/images/characters/${char.id}_${imgSuffix}.png`;
+  const imgUrl  = `https://sk.reu.com.tw/images/characters/${char.id}_${imgSuffix}.png?v=${Date.now()}`;
   const charImg = await loadImage(imgUrl).catch(() => null);
   if (charImg) {
     const scale = Math.max(W / charImg.width, H / charImg.height);
