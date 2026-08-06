@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>新光人壽｜找到我的人生下半場</title>
-<link rel="icon" href="data:,">
+<link rel="icon" href="/images/ui/cover_illustration.png">
 <style>
   /* =============================================
      🎨 品牌色彩設定（可修改）
@@ -844,7 +844,7 @@
       <div class="cover-meta-item"><span class="icon">⏱️</span> 約 1 分鐘完成</div>
       <div class="cover-meta-item"><span class="icon">🎭</span> 6 種人生樣態，看看你是哪一型</div>
       <div class="cover-meta-item"><span class="icon">💌</span> 完成後獲得專屬明信片，寄到您的信箱</div>
-      <div class="cover-meta-item"><span class="icon">🔒</span> 資料僅用於寄送明信片，不作其他用途</div>
+      <div class="cover-meta-item"><span class="icon">🔒</span> 資料僅用於寄送明信片，不作其他用途或交付給第三方使用</div>
     </div>
     <button class="btn-primary" onclick="startQuiz()">開始探索我的樣態 →</button>
   </div>
@@ -932,14 +932,9 @@
     <div class="submit-row">
       <button class="btn-primary" onclick="sendEmail()">寄到我的信箱</button>
     </div>
-    <div style="text-align:center;margin-top:12px;">
-      <button onclick="downloadPostcard()"
-              style="background:none;border:2px solid var(--gold);color:var(--gold);
-                     padding:12px 28px;border-radius:10px;font-size:15px;
-                     font-family:inherit;font-weight:700;cursor:pointer;
-                     letter-spacing:0.05em;transition:all 0.2s;">
-        下載明信片圖片
-      </button>
+    <!-- 下載按鈕：隱藏但功能保留，如需重新啟用移除 display:none -->
+    <div style="display:none">
+      <button onclick="downloadPostcard()">下載明信片圖片</button>
     </div>
     <div style="text-align:center;margin-top:12px;font-size:13px;color:var(--text-light)">
       寄送至：<span id="emailDisplay"></span>
@@ -1519,7 +1514,8 @@ function getCharacterImageUrl(char, genderAnswer) {
    產生明信片
    ============================================= */
 function generatePostcard() {
-  const motto = document.getElementById('mottoInput').value.trim();
+  // 移除 HTML 標籤，防止注入
+  const motto = document.getElementById('mottoInput').value.trim().replace(/<[^>]*>/g, '');
   const email = document.getElementById('emailInput').value.trim();
 
   if (!motto) {
