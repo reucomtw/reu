@@ -1605,7 +1605,7 @@ async function sendEmail() {
     emailCanvas.width  = EW;
     emailCanvas.height = EH;
     emailCanvas.getContext('2d').drawImage(fullCanvas, 0, 0, EW, EH);
-    postcardBase64 = emailCanvas.toDataURL('image/jpeg', 0.75).split(',')[1]; // 內文
+    postcardBase64 = emailCanvas.toDataURL('image/jpeg', 0.50).split(',')[1]; // 內文
     postcardAttach = fullCanvas.toDataURL('image/png').split(',')[1];           // 附件 PNG 高畫質
   } catch (err) {
     console.warn('圖片合成失敗：', err);
